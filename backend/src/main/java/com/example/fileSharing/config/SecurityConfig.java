@@ -32,6 +32,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
       .addFilterAfter(new TokenVerifier(), JwtAuthFilter.class)
       .authorizeRequests()
       .antMatchers("/auth/register").permitAll()
+      .antMatchers("/files/*").authenticated()
       .anyRequest()
       .authenticated();
   }

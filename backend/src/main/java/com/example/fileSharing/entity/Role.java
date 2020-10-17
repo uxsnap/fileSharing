@@ -2,13 +2,16 @@ package com.example.fileSharing.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.Collection;
+import java.util.Set;
 
 @Entity
 @Table(name = "ROLE")
-@Data
+@Getter
 @NoArgsConstructor
 public class Role {
   @Id
@@ -18,4 +21,9 @@ public class Role {
   @Column(name = "name")
   private String name;
 
+  @ManyToMany(mappedBy = "roles")
+  private Collection<User> users;
+
+  @ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+  private Set<Privilege> privileges;
 }

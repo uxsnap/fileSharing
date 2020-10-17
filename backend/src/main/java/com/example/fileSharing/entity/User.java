@@ -2,13 +2,12 @@ package com.example.fileSharing.entity;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Type;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
-import java.util.Collection;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 @Entity
 @Table(name = "USER")
@@ -16,7 +15,9 @@ import java.util.UUID;
 @NoArgsConstructor
 public class User implements UserDetails {
   @Id
-  @GeneratedValue
+  @GeneratedValue( generator = "uuid2" )
+  @Type(type="uuid-char")
+  @Column(name = "id")
   private UUID id;
 
   @Column(name = "username")
@@ -34,9 +35,24 @@ public class User implements UserDetails {
   @Column(name = "token_expired")
   private boolean tokenExpired;
 
-  @ManyToMany(fetch = FetchType.LAZY,
-    cascade = { CascadeType.PERSIST, CascadeType.MERGE })
-  private Set<Privilege> privileges;
+  @ManyToMany(fetch = FetchType.LAZY)
+  private Collection<Role> roles;
+
+  @OneToMany(
+    fetch = FetchType.LAZY,
+    mappedBy = "user",
+    orphanRemoval = true,
+    cascade = CascadeType.PERSIST
+  )
+  private List<File> files;
+
+  @OneToMany(
+    fetch = FetchType.LAZY,
+    mappedBy = "user",
+    orphanRemoval = true,
+    cascade = CascadeType.PERSIST
+  )
+  private List<UserFriend> userFriends;
 
   @Override
   public String getUsername() {
