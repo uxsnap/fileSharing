@@ -7,7 +7,15 @@ export const Auth = (props) => {
   const [login, setLogin] = useState("");
   const [password, setPassword] = useState("");
 
-  // const [page, setPage] = useState("Login page");
+  const onSubmit = async (event) => {
+    switch (curType) {
+      case AUTH_TYPES.LOGIN.type:
+        await onLogin(login, password);
+      case AUTH_TYPES.REGISTRATION.type:
+        await onRegister(login, password);
+    }
+    event.preventDefault();
+  };
 
   return (
     <div className="main-auth">
@@ -19,7 +27,7 @@ export const Auth = (props) => {
           ? AUTH_TYPES.REGISTRATION.label
           : AUTH_TYPES.FORGOT_PASS.label
       }</h2>
-      <form action={curType} className="main-auth__form" onSubmit={(e) => e.preventDefault()}>
+      <form action={curType} className="main-auth__form" onSubmit={onSubmit}> 
         <Row>
           <Col>
             <Input onChange={setLogin} value={login} label="Email"/>
