@@ -11,18 +11,11 @@ import java.util.Set;
 public enum RoleEnum {
   USER(
     Sets.newHashSet(
-      READ,
-      ADD,
+      LOAD,
       DELETE,
-      UPDATE
+      RENAME
     )
-  ),
-  ADMIN(Sets.newHashSet(
-    READ_ALL,
-    ADD_ALL,
-    DELETE_ALL,
-    UPDATE_ALL
-  ));
+  );
 
   private Set<PrivilegeEnum> privileges;
 

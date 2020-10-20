@@ -4,14 +4,9 @@ import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
 public enum PrivilegeEnum {
-  READ("file:read"),
-  READ_ALL("file:read_all"),
-  ADD("file:add"),
-  ADD_ALL("file:add_all"),
+  LOAD("file:load"),
   DELETE("file:delete"),
-  DELETE_ALL("file:delete_all"),
-  UPDATE("file:update"),
-  UPDATE_ALL("file:update_all");
+  RENAME("file:rename");
 
   private final String privilege;
 

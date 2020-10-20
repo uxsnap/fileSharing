@@ -1,5 +1,6 @@
 package com.example.fileSharing.entity;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -24,5 +25,11 @@ public class UserFriend {
   private String userName;
 
   @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "user_id", nullable =  false)
   private User user;
+
+  public UserFriend(String name, User user) {
+    this.userName = name;
+    this.user = user;
+  }
 }

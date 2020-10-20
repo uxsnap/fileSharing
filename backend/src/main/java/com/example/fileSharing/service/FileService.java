@@ -2,8 +2,11 @@ package com.example.fileSharing.service;
 
 import com.example.fileSharing.dto.JsonResponse;
 import com.example.fileSharing.entity.File;
+import com.example.fileSharing.entity.FileClient;
 import com.example.fileSharing.entity.User;
 import com.example.fileSharing.helpers.CurrentLoggedUser;
+import com.example.fileSharing.helpers.PrivilegeEnum;
+import com.example.fileSharing.repository.FileClientRepository;
 import com.example.fileSharing.repository.FileRepository;
 import com.example.fileSharing.repository.UserRepository;
 import lombok.AllArgsConstructor;
@@ -28,6 +31,7 @@ import static com.example.fileSharing.helpers.ConstantClass.UPLOADED_FOLDER;
 public class FileService {
   private final UserRepository userRepository;
   private final FileRepository fileRepository;
+  private final FileClientRepository fileClientRepository;
 
   public List<File> getAllUserFiles(String userName) {
     User user = userRepository.findByUsername(userName);
@@ -95,6 +99,18 @@ public class FileService {
     fileEntity.setOriginalName(file.getOriginalFilename());
 
     fileRepository.save(fileEntity);
+
+    List<PrivilegeEnum> privilegeEnums = Arrays.asList(
+      PrivilegeEnum.LOAD, PrivilegeEnum.DELETE, PrivilegeEnum.RENAME
+    );
+
+    for (PrivilegeEnum privilegeEnum: privilegeEnums) {
+      fileClientRepository.save(new FileClient(
+        user.getUsername(),
+        privilegeEnum.getPrivilege(),
+        fileEntity
+      ));
+    }
     return new JsonResponse("Ok", HttpStatus.OK.value());
   }
 }

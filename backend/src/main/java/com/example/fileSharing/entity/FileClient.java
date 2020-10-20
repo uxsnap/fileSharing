@@ -1,11 +1,13 @@
 package com.example.fileSharing.entity;
 
+import com.example.fileSharing.helpers.PrivilegeEnum;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
+import java.security.Permission;
 import java.util.UUID;
 
 @Entity
@@ -22,6 +24,15 @@ public class FileClient {
 
   @Column(name = "username")
   private String userName;
+
+  @Column(name = "privilege")
+  private String privilege;
+
+  public FileClient(String userName, String privilege, File file) {
+    this.userName = userName;
+    this.privilege = privilege;
+    this.file = file;
+  }
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "file_id", nullable = false)

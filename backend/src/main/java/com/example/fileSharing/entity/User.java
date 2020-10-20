@@ -10,7 +10,7 @@ import javax.persistence.*;
 import java.util.*;
 
 @Entity
-@Table(name = "USER")
+@Table(name = "user")
 @Data
 @NoArgsConstructor
 public class User implements UserDetails {
@@ -22,9 +22,6 @@ public class User implements UserDetails {
 
   @Column(name = "username")
   private String username;
-
-//  @Column(name = "email")
-//  private String email;
 
   @Column(name = "enabled")
   private boolean enabled;

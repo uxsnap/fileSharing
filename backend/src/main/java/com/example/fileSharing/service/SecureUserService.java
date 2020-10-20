@@ -13,8 +13,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 
-@AllArgsConstructor
 @Service
+@AllArgsConstructor
 public class SecureUserService implements UserDetailsService {
   private final UserRepository userRepository;
 
