@@ -1,7 +1,7 @@
-import { REQUEST_STATUS } from './index';
+import { RES_STATUS } from './index';
 
 export default () => ({
-	status: REQUEST_STATUS.LOADING,
+	status: RES_STATUS.LOADING,
 	message: '',
 	error: undefined,
 	data: []  

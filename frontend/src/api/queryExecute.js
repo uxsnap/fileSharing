@@ -1,5 +1,11 @@
-import axios from 'axios';
+import axiosConfig from './axiosConfig';
 
-export default axios.create({
-  baseURL: BASE_URL
-});
+
+export default async (method, api, params = {}) => {
+	try {
+	 const res = await axiosConfig[method](api, params);
+	 return res;
+	} catch(error) {
+		return error.response;
+	}
+};

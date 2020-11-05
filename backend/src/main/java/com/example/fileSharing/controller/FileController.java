@@ -1,12 +1,16 @@
 package com.example.fileSharing.controller;
 
 import com.example.fileSharing.dto.JsonResponse;
+import com.example.fileSharing.dto.MessageDto;
+import com.example.fileSharing.dto.UserInfoDto;
 import com.example.fileSharing.entity.File;
 import com.example.fileSharing.repository.FileRepository;
 import com.example.fileSharing.service.FileService;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -22,8 +26,13 @@ public class FileController {
   private final FileService fileService;
 
   @GetMapping("/{userName}")
-  public List<File> getUserFiles(@PathVariable(name = "userName") String userName) {
-    return fileService.getAllUserFiles(userName);
+  public ResponseEntity<Object> getUserFiles(@PathVariable(name = "userName") String userName) {
+    try {
+      List<File> files = fileService.getAllUserFiles(userName);
+      return new ResponseEntity<>(files, HttpStatus.OK);
+    } catch (Exception e) {
+      return new ResponseEntity<Object>(new MessageDto("Error while fetching user files"), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
 
   @PostMapping("/{userName}")

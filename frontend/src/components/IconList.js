@@ -1,14 +1,15 @@
 import React from 'react';
+import { generateKey } from '../utils';
 import { Icon } from './index';
 
 export default ({ items, stub }) => (
- 	<div class="icon-list">
- 		<ul class="icon-list__list">
+ 	<div className="icon-list">
+ 		<ul className="icon-list__list">
  			{items.length 
  				? items.map((item, ind) => (
- 					<li class="icon-list__item">
+ 					<li key={generateKey()} className="icon-list__item">
  						<Icon iconType={item.icon} />
- 						<span class="icon-list__info">{item.label}</span>
+ 						<span className="icon-list__info">{item.label}</span>
  					</li>
  				))
  				: stub ? stub : ''

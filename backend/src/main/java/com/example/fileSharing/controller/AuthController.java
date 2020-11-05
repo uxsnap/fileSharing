@@ -20,8 +20,13 @@ public class AuthController {
   private final UserRepository userRepository;
   private final AuthService authService;
 
+  @PostMapping("/login")
+  public ResponseEntity loginUser(@RequestBody UserDto userDto) {
+    return authService.loginUser(userDto);
+  }
+
   @PostMapping("/register")
-  public JsonResponse registerNewUser(@RequestBody UserDto userDto) {
+  public ResponseEntity registerNewUser(@RequestBody UserDto userDto) {
     return authService.registerNewUserAccount(userDto);
   }
 

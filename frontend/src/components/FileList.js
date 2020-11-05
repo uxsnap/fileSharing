@@ -1,8 +1,8 @@
 import React from 'react';
-import { File } from './index';
+import { File, Button } from './index';
 
-export default ({ items, stub, onDelete, onEdit }) => (
-	<div class="file-list">
+export default ({ items, stub, onDelete, onEdit, addFile }) => (
+	<div className="file-list">
 		{items && items.length
 			? items.map((item) => (
 				<File 

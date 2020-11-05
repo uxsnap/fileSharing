@@ -27,6 +27,9 @@
 	&__info
 		margin-top: 20px
 		max-width: 250px
+		position: relative
+		& .loader
+			transform: translate(-50%, -50%) scale(.5)
 		& .icon-list
 			align-self: flex-start
 			font-size: 18px
@@ -34,6 +37,8 @@
 			&__item	
 				color: $mainColor
 				margin-top: 10px
+				&:first-child
+					margin-top: 0
 			&__info
 				display: inline-block
 				& .icon

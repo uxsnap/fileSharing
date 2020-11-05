@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { AUTH_TYPES } from "../utils";
-import { Row, Col, Input, Button, Logo } from "../components";
+import { Row, Col, Input, Button } from "../components";
+import { onLogin, onRegister } from '../api';
 
 export const Auth = (props) => {
   const [curType, setType] = useState(AUTH_TYPES.LOGIN.type);
@@ -8,13 +9,14 @@ export const Auth = (props) => {
   const [password, setPassword] = useState("");
 
   const onSubmit = async (event) => {
-    switch (curType) {
-      case AUTH_TYPES.LOGIN.type:
-        await onLogin(login, password);
-      case AUTH_TYPES.REGISTRATION.type:
-        await onRegister(login, password);
-    }
     event.preventDefault();
+    let res;
+    if (curType === AUTH_TYPES.LOGIN.type) {
+      res = await onLogin(login, password);
+      props.checkPage(login);
+    } else if (curType === AUTH_TYPES.REGISTRATION.type) {
+      res = await onRegister(login, password);
+    }
   };
 
   return (
@@ -30,12 +32,12 @@ export const Auth = (props) => {
       <form action={curType} className="main-auth__form" onSubmit={onSubmit}> 
         <Row>
           <Col>
-            <Input onChange={setLogin} value={login} label="Email"/>
+            <Input onChange={setLogin} value={login} label="Username"/>
           </Col>
         </Row>
         <Row>
           <Col>
-            <Input onChange={setPassword} value={password} label="Password"/>
+            <Input type="password" onChange={setPassword} value={password} label="Password"/>
           </Col>
         </Row>
         <Row>

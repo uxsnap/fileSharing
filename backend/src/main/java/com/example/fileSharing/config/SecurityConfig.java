@@ -6,6 +6,7 @@ import com.example.fileSharing.service.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -22,19 +23,21 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
   private final UserService userService;
 
   @Override
+  @Bean
+  protected AuthenticationManager authenticationManager() throws Exception {
+    return super.authenticationManager();
+  }
+
+  @Override
   protected void configure(HttpSecurity http) throws Exception {
     http
       .csrf().disable()
       .sessionManagement()
         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
       .and()
-      .addFilter(new JwtAuthFilter(authenticationManager()))
       .addFilterAfter(new TokenVerifier(), JwtAuthFilter.class)
       .authorizeRequests()
-      .antMatchers("/auth/register").permitAll()
-      .antMatchers("/files/*").authenticated()
-      .anyRequest()
-      .authenticated();
+      .antMatchers("/**").permitAll();
   }
 
   @Override
@@ -48,5 +51,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     provider.setPasswordEncoder(passwordEncoder);
     provider.setUserDetailsService(userService);
     return provider;
+  }
+
+  public JwtAuthFilter jwtAuthFilter() throws Exception {
+    JwtAuthFilter jwtAuthFilter = new JwtAuthFilter(authenticationManager());
+    jwtAuthFilter.setFilterProcessesUrl("/auth/login");
+    return jwtAuthFilter;
   }
 }

@@ -1,10 +1,21 @@
-import React from 'react';
-import { Auth, Profile } from './pages/Auth';
+import React, { useState, useEffect } from 'react';
+import { Auth } from './pages/Auth';
+import { Profile } from './pages/Profile';
 
 function App() {
+  const [userName, setUserName] = useState('');
+
+  const checkPage = () => {
+    setUserName(localStorage.getItem('USER_NAME'));
+  };
+
+  useEffect(() => {
+    checkPage();
+  }, []);
+
   return (
     <div className="App">
-      <Auth />
+      {userName ? <Profile userName={userName} /> : <Auth checkPage={checkPage}/>}
     </div>
   );
 }
