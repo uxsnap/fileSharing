@@ -1,5 +1,7 @@
 package com.example.fileSharing.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -43,5 +45,6 @@ public class File {
 
   @ManyToOne(fetch=FetchType.LAZY)
   @JoinColumn(name = "user_id", nullable = false)
+  @JsonBackReference
   private User user;
 }

@@ -1,5 +1,6 @@
 package com.example.fileSharing.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
@@ -22,6 +23,7 @@ public class Role {
   private String name;
 
   @ManyToMany(mappedBy = "roles")
+  @JsonBackReference
   private Collection<User> users;
 
   @ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE })

@@ -14,6 +14,8 @@ import org.apache.tomcat.util.http.fileupload.FileUtils;
 import org.springframework.boot.web.servlet.server.Session;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -67,10 +69,12 @@ public class FileService {
     }
   }
 
-  public JsonResponse uploadFile(String userName, MultipartFile file) throws IOException {
+//  Work out needed exceptions
+  public void uploadFile(String userName, MultipartFile file) throws Exception {
     String currentUser = CurrentLoggedUser.getCurrentUser();
+    System.out.printf("%s %s", currentUser, userName);
     if (!currentUser.equals(userName))
-      return new JsonResponse("Wrong user", HttpStatus.BAD_REQUEST.value());
+      throw new Exception("Wrong user");
     byte[] bytes = file.getBytes();
     String curFileExtension =
       file
@@ -84,8 +88,9 @@ public class FileService {
 
     String path = UPLOADED_FOLDER + curFileName;
     User user = userRepository.findByUsername(userName);
-    if (user == null)
-      return new JsonResponse("User not found", HttpStatus.UNAUTHORIZED.value());
+    if (user == null) {
+      throw new UsernameNotFoundException("Cannot find user with this username");
+    }
 
     FileOutputStream output = new FileOutputStream(path);
     output.write(bytes);
@@ -103,7 +108,6 @@ public class FileService {
     List<PrivilegeEnum> privilegeEnums = Arrays.asList(
       PrivilegeEnum.LOAD, PrivilegeEnum.DELETE, PrivilegeEnum.RENAME
     );
-
     for (PrivilegeEnum privilegeEnum: privilegeEnums) {
       fileClientRepository.save(new FileClient(
         user.getUsername(),
@@ -111,6 +115,5 @@ public class FileService {
         fileEntity
       ));
     }
-    return new JsonResponse("Ok", HttpStatus.OK.value());
   }
 }

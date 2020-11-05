@@ -26,10 +26,10 @@ public class UserController {
     try {
       UserDetails user = userService.loadUserByUsername(userName);
       if (user != null)
-        return new ResponseEntity<Object>(new UserInfoDto(userName), HttpStatus.OK);
+        return new ResponseEntity<>(new UserInfoDto(userName), HttpStatus.OK);
       return new ResponseEntity<>(new MessageDto("No user with provided name"), HttpStatus.NOT_FOUND);
     } catch (Exception e) {
-      return new ResponseEntity<Object>(new MessageDto("Error while fetching user data"), HttpStatus.INTERNAL_SERVER_ERROR);
+      return new ResponseEntity<>(new MessageDto("Error while fetching user data"), HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 

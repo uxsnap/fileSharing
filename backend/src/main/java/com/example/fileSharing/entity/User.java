@@ -1,5 +1,6 @@
 package com.example.fileSharing.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Type;
@@ -41,6 +42,7 @@ public class User implements UserDetails {
     orphanRemoval = true,
     cascade = CascadeType.PERSIST
   )
+  @JsonBackReference
   private List<File> files;
 
   @OneToMany(

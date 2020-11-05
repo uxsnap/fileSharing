@@ -1,5 +1,5 @@
 import { defaultResponseObject, RES_STATUS } from 'utils';
-import { getUserData, getUserFiles } from 'api';
+import { getUserData, getUserFiles, uploadFile } from 'api';
 
 export const createPersonInfoList = (personObj) => {
 	return [
@@ -39,7 +39,7 @@ export const fetchUserFiles = async (userName, cb) => {
   }
 };
 
-const handleFileUpload = (event, cb, successCb) => {
+export const handleFileUpload = async (userName, event, cb, successCb) => {
     if (!event.target.files.length) {
       cb(RES_STATUS.OK);
       return;
@@ -47,7 +47,7 @@ const handleFileUpload = (event, cb, successCb) => {
     const file = event.target.files[0];
     cb(RES_STATUS.LOADING);
     try {
-      const res = await uploadFile(file);
+      const res = await uploadFile(userName, file);
       cb(RES_STATUS.OK);
       successCb();
     } catch (error) {

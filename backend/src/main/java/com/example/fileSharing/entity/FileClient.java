@@ -1,6 +1,8 @@
 package com.example.fileSharing.entity;
 
 import com.example.fileSharing.helpers.PrivilegeEnum;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -36,5 +38,6 @@ public class FileClient {
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "file_id", nullable = false)
+  @JsonBackReference
   private File file;
 }

@@ -1,5 +1,6 @@
 package com.example.fileSharing.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -19,5 +20,6 @@ public class Privilege {
   private String name;
 
   @ManyToMany(mappedBy = "privileges")
+  @JsonBackReference
   private Collection<Role> roles;
 }

@@ -70,9 +70,12 @@ export const Profile = (props) => {
                 {lazyRender(<IconList items={infoList.data} />, infoList.status)}
               </div>
               <div className="profile__add-file">
-                <input type="file" name="file" ref={fileRef} onChange={(event) => handleFileUpload(event, setFileState, () => {
-                  fetchUserFiles(props.userName, setUserFiles);
-                })}/>
+                <input type="file" name="file" ref={fileRef} onChange={(event) => handleFileUpload(
+                  props.userName, 
+                  event, 
+                  setFileState, 
+                  () => fetchUserFiles(props.userName, setUserFiles)
+                )}/>
                 <Button onClick={addNewFile}>Add new file</Button>
               </div> 
             </div>
