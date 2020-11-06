@@ -5,7 +5,8 @@ import {
   createPersonInfoList, 
   fetchUserData, 
   fetchUserFiles,
-  handleFileUpload 
+  handleFileUpload,
+  handleDeleteFile 
 } from './helpers';
 
 export const Profile = (props) => {
@@ -82,7 +83,15 @@ export const Profile = (props) => {
 				  </div>
         </Col>
 				<div className="profile__files">
-          {lazyRender(<FileList items={fileItems} onDelete={() => false} onEdit={() => false}/>, -1)}
+          {lazyRender(
+            <FileList items={fileItems.data} 
+              onDelete={
+                (id) => handleDeleteFile(id, fileItems, setUserFiles)
+              } 
+              onEdit={() => false}
+            />, 
+            fileItems.status
+          )}
 				</div>
 			</Row>
 		</div>

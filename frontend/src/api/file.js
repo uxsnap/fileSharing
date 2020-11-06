@@ -1,4 +1,5 @@
 import axios from 'axios';
+import authorized from './authorized';
 
 export const uploadFile = async (userName, file) => {
 	const bodyFormData = new FormData();
@@ -14,4 +15,8 @@ export const uploadFile = async (userName, file) => {
 		}
 
 	});
-}
+};
+
+export const deleteFile = async (fileId) => {
+	return authorized('delete', `/file/${fileId}`);
+};

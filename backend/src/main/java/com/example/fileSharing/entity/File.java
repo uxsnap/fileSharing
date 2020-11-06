@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
@@ -39,7 +40,7 @@ public class File {
     fetch = FetchType.LAZY,
     mappedBy = "file",
     orphanRemoval = true,
-    cascade = CascadeType.PERSIST
+    cascade = CascadeType.ALL
   )
   private Set<FileClient> fileClients;
 

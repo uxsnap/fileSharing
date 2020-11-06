@@ -42,30 +42,21 @@ public class FileService {
     return fileRepository.findAllByUserId(user.getId());
   }
 
-  public JsonResponse deleteFile(UUID fileId) {
+  public void deleteFile(UUID fileId) {
     String currentUser = CurrentLoggedUser.getCurrentUser();
     try {
       User user = userRepository.findByUsername(currentUser);
-      List<File> files = user.getFiles();
-      for (File file : files) {
-        if (file.getId().equals(fileId)) {
-          String link = file.getLink();
-          fileRepository.deleteFileById(fileId);
-          Files.delete(Paths.get(link));
-          return new JsonResponse("Deleted", HttpStatus.OK.value());
-        }
-      }
-      return new JsonResponse(
-        "Cannot find user's file",
-        HttpStatus.BAD_REQUEST.value()
-      );
-
+      File file = user.getFiles().stream()
+        .filter(item -> item.getId()
+          .equals(fileId))
+        .findFirst()
+        .orElse(null);
+      if (file == null) throw new NullPointerException("No needed file");
+      fileClientRepository.deleteByFileId(file.getId());
+      fileRepository.deleteFileById(file.getId());
+      Files.delete(Paths.get(file.getLink()));
     } catch (Exception e) {
       e.printStackTrace();
-      return new JsonResponse(
-        "Problem with deleting the file",
-        HttpStatus.BAD_REQUEST.value()
-      );
     }
   }
 

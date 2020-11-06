@@ -1,3 +1,3 @@
 export { onLogin, onRegister } from './auth';
 export { getUserData, getUserFiles } from './user';
-export { uploadFile } from './file';
+export { uploadFile, deleteFile } from './file';

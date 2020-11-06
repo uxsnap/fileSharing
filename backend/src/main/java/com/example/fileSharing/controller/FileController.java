@@ -48,9 +48,14 @@ public class FileController {
   }
 
   @DeleteMapping("/{fileId}")
-  public JsonResponse deleteFile(
+  public ResponseEntity<MessageDto> deleteFile(
     @PathVariable(name = "fileId") UUID fileId
   ) {
-    return fileService.deleteFile(fileId);
+    try {
+      fileService.deleteFile(fileId);
+      return new ResponseEntity<>(new MessageDto("OK"), HttpStatus.OK);
+    } catch (Exception e) {
+      return new ResponseEntity<>(new MessageDto("Problem with deleting the file"), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
 }
