@@ -20,3 +20,7 @@ export const uploadFile = async (userName, file) => {
 export const deleteFile = async (fileId) => {
 	return authorized('delete', `/file/${fileId}`);
 };
+
+export const editFile = async (fileId, fileName) => {
+	return authorized('patch', `/file/${fileId}`, { fileName });
+};

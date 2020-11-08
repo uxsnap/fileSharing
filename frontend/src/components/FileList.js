@@ -8,7 +8,7 @@ export default ({ items, stub, onDelete, onEdit, addFile }) => (
 				<File 
 					filename={item.name}
 					onDelete={() => onDelete(item.id)}
-					onEdit={() => onEdit(item.id)}
+					onEdit={(fileName) => onEdit(item.id, fileName)}
 				/>
 			)) : stub ? stub : ''
 		}

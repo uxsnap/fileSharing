@@ -52,8 +52,14 @@ public class FileService {
         .findFirst()
         .orElse(null);
       if (file == null) throw new NullPointerException("No needed file");
-      fileClientRepository.deleteByFileId(file.getId());
-      fileRepository.deleteFileById(file.getId());
+      UUID curFileId = file.getId();
+      FileClient fileClient = fileClientRepository.findByFile_IdAndPrivilege(
+        curFileId,
+        PrivilegeEnum.DELETE.getPrivilege()
+      );
+      if (fileClient == null) throw new NullPointerException("No such privilege");
+      fileClientRepository.deleteByFileId(curFileId);
+      fileRepository.deleteFileById(curFileId);
       Files.delete(Paths.get(file.getLink()));
     } catch (Exception e) {
       e.printStackTrace();
@@ -106,5 +112,9 @@ public class FileService {
         fileEntity
       ));
     }
+  }
+
+  public void editFile(UUID fileId, String fileName) {
+    fileRepository.editFileName(fileId, fileName);
   }
 }

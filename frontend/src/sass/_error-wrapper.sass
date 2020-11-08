@@ -1,0 +1,33 @@
+.error
+  &-wrapper
+    height: 100%
+    width: 100%
+    position: relative
+  &-box
+    position: absolute
+    right: 20px
+    top: 25%
+    position: absolute
+    // right: 30px
+    top: 10%
+    padding: 8px 12px
+    background: #d6212e
+    border-radius: 5px
+    color: #e3e4e8
+    // color: white
+    font-family: 'NotoSans', sans-serif
+    border: 1px solid $mainColor
+    box-shadow: 0 0 9px $mainColor
+    z-index: 10000
+    display: flex
+    align-items: center
+    overflow-x: hidden
+    animation: ease-in 1s translateFromRight 
+    & .iicon
+      margin-left: 20px
+      cursor: pointer
+    div
+      * > div
+        &:first-child
+          font-weight: bold
+          font-size: 24px

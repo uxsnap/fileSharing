@@ -15,7 +15,12 @@ public interface FileRepository extends JpaRepository<File, UUID> {
   List<File> findAllByUserId(UUID userId);
 
   @Transactional
-  @Query("delete from File where id = ?1")
   @Modifying
+  @Query("delete from File where id = ?1")
   void deleteFileById(UUID fileId);
+
+  @Transactional
+  @Modifying
+  @Query("update File set originalName = ?2 where id = ?1")
+  void editFileName(UUID fileId, String fileName);
 }

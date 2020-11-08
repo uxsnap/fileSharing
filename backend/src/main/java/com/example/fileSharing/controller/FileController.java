@@ -1,5 +1,6 @@
 package com.example.fileSharing.controller;
 
+import com.example.fileSharing.dto.FileNameDto;
 import com.example.fileSharing.dto.FilesDto;
 import com.example.fileSharing.dto.JsonResponse;
 import com.example.fileSharing.dto.MessageDto;
@@ -44,6 +45,19 @@ public class FileController {
       return new ResponseEntity<>(new MessageDto("OK"), HttpStatus.OK);
     } catch (Exception e) {
       return new ResponseEntity<>(new MessageDto("Error while fetching uploading file"), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  @PatchMapping("/{fileId}")
+  public ResponseEntity<MessageDto> editFile(
+    @PathVariable(name = "fileId") UUID fileId,
+    @RequestBody FileNameDto fileName
+  ) {
+    try {
+      fileService.editFile(fileId, fileName.getFileName());
+      return new ResponseEntity<>(new MessageDto("OK"), HttpStatus.OK);
+    } catch (Exception e) {
+      return new ResponseEntity<>(new MessageDto("Problem with editing the file"), HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 

@@ -1,15 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Row, Col, Input, Icon, IconList, FileList, Button } from 'components';
 import { defaultResponseObject, defaultStatusObject, lazyRender, FILE_STATE } from 'utils';
-import { 
-  createPersonInfoList, 
-  fetchUserData, 
-  fetchUserFiles,
-  handleFileUpload,
-  handleDeleteFile 
-} from './helpers';
+import ApiService from 'service/ApiService';
 
-export const Profile = (props) => {
+export const Profile = ({ userName, onError }) => {
   const [fileState, setFileState] = useState(defaultStatusObject());
 
 	const [infoList, setUserInfo] = useState(defaultResponseObject());
@@ -19,19 +13,12 @@ export const Profile = (props) => {
 
   const fileRef = useRef(null);
 
+  const apiService = new ApiService(onError);
+
   useEffect(() => {
-    fetchUserData(props.userName, setUserInfo);
-    fetchUserFiles(props.userName, setUserFiles);
-  }, [props.userName]);
-
-  // const fileItems = [
-  //   { name: 'filename.jpg', id: 1 },
-  //   { name: 'filename.jpg', id: 1 },
-  //   { name: 'filename.jpg', id: 1 },
-  //   { name: 'filename.jpg', id: 1 },
-  //   { name: 'filename.jpg', id: 1 },
-  // ];
-
+    apiService.fetchUserData(userName, setUserInfo);
+    apiService.fetchUserFiles(userName, setUserFiles);
+  }, [userName, onError]);
 
   const addNewFile = () => {
     fileRef.current.click();
@@ -71,11 +58,11 @@ export const Profile = (props) => {
                 {lazyRender(<IconList items={infoList.data} />, infoList.status)}
               </div>
               <div className="profile__add-file">
-                <input type="file" name="file" ref={fileRef} onChange={(event) => handleFileUpload(
-                  props.userName, 
+                <input type="file" name="file" ref={fileRef} onChange={(event) => apiService.handleFileUpload(
+                  userName, 
                   event, 
                   setFileState, 
-                  () => fetchUserFiles(props.userName, setUserFiles)
+                  () => apiService.fetchUserFiles(userName, setUserFiles)
                 )}/>
                 <Button onClick={addNewFile}>Add new file</Button>
               </div> 
@@ -86,9 +73,14 @@ export const Profile = (props) => {
           {lazyRender(
             <FileList items={fileItems.data} 
               onDelete={
-                (id) => handleDeleteFile(id, fileItems, setUserFiles)
+                (id) => apiService.handleDeleteFile(id, fileItems, setUserFiles)
               } 
-              onEdit={() => false}
+              onEdit={
+                (id, fileName) => apiService.handleEditFile(id, fileName, fileItems, setUserFiles)
+              }
+              stub={
+                <span className="profile__no-items">You have 0 files</span>
+              }
             />, 
             fileItems.status
           )}

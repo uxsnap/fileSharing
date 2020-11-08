@@ -8,3 +8,4 @@ export { default as IconList } from './IconList';
 export { default as File } from './File';
 export { default as FileList } from './FileList';
 export { default as Loader } from './Loader';
+export { default as ErrorWrapper } from './ErrorWrapper';
