@@ -33,6 +33,9 @@ public class User implements UserDetails {
   @Column(name = "token_expired")
   private boolean tokenExpired;
 
+  @Column(name = "avatar")
+  private String avatar;
+
   @ManyToMany(fetch = FetchType.LAZY)
   private Collection<Role> roles;
 

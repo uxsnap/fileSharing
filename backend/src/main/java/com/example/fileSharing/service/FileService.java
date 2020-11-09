@@ -26,6 +26,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
 
+import static com.example.fileSharing.helpers.ConstantClass.AVATAR_FOLDER;
 import static com.example.fileSharing.helpers.ConstantClass.UPLOADED_FOLDER;
 
 @Service
@@ -69,9 +70,7 @@ public class FileService {
 //  Work out needed exceptions
   public void uploadFile(String userName, MultipartFile file) throws Exception {
     String currentUser = CurrentLoggedUser.getCurrentUser();
-    System.out.printf("%s %s", currentUser, userName);
-    if (!currentUser.equals(userName))
-      throw new Exception("Wrong user");
+    if (!currentUser.equals(userName)) throw new UsernameNotFoundException("Wrong user");
     byte[] bytes = file.getBytes();
     String curFileExtension =
       file
@@ -85,9 +84,7 @@ public class FileService {
 
     String path = UPLOADED_FOLDER + curFileName;
     User user = userRepository.findByUsername(userName);
-    if (user == null) {
-      throw new UsernameNotFoundException("Cannot find user with this username");
-    }
+    if (user == null) throw new UsernameNotFoundException("Cannot find user with this username");
 
     FileOutputStream output = new FileOutputStream(path);
     output.write(bytes);
@@ -116,5 +113,28 @@ public class FileService {
 
   public void editFile(UUID fileId, String fileName) {
     fileRepository.editFileName(fileId, fileName);
+  }
+
+  public void uploadAvatar(String userName, MultipartFile avatar) throws Exception {
+    String currentUser = CurrentLoggedUser.getCurrentUser();
+    if (!currentUser.equals(userName)) throw new UsernameNotFoundException("Wrong user");
+    byte[] bytes = avatar.getBytes();
+    String curFileExtension =
+      Objects.requireNonNull(avatar
+        .getOriginalFilename())
+        .split("\\.")[1];
+    if (!curFileExtension.matches("png|jpe?g")) throw new Exception("Wrong exception");
+    User user = userRepository.findByUsername(userName);
+    if (user == null) throw new UsernameNotFoundException("User cannot be found");
+    String path = AVATAR_FOLDER + avatar.getOriginalFilename();
+    user.setAvatar(path);
+    try {
+      FileOutputStream output = new FileOutputStream(path);
+      output.write(bytes);
+      output.close();
+      userRepository.save(user);
+    } catch (IOException exception) {
+      throw new IOException("Cannot save avatar-file");
+    }
   }
 }

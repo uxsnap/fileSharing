@@ -5,11 +5,12 @@ import ApiService from 'service/ApiService';
 
 export const Profile = ({ userName, onError }) => {
   const [fileState, setFileState] = useState(defaultStatusObject());
+  const [avatarState, setAvatarState] = useState(defaultStatusObject());
 
 	const [infoList, setUserInfo] = useState(defaultResponseObject());
   const [fileItems, setUserFiles] = useState(defaultResponseObject());
+  const [userAvatar, setUserAvatar] = useState(defaultResponseObject());
   const [search, setSearch] = useState("");
-  const [img, setImg] = useState("");
 
   const fileRef = useRef(null);
 
@@ -20,8 +21,8 @@ export const Profile = ({ userName, onError }) => {
     apiService.fetchUserFiles(userName, setUserFiles);
   }, [userName, onError]);
 
-  const addNewFile = () => {
-    fileRef.current.click();
+  const addNewFile = (ref) => {
+    ref.current.click();
   };
 
 	return (
@@ -48,9 +49,14 @@ export const Profile = ({ userName, onError }) => {
         <Col>
 				  <div className="profile__me me">
           	<div>
-    					<div className="me__avatar">
-                {img.length
-                  ? <img src={img} alt="ME"/>
+    					<div className="me__avatar" onClick={() => apiService.handleNewAvatar(userName)}>
+                <input type="file" name="file" ref={fileRef} onChange={(event) => apiService.handleNewAvatar(
+                  userName, 
+                  event, 
+                  setAvatarState
+                )}/>
+                {userAvatar.length
+                  ? <img src={userAvatar} alt="ME"/>
                   : <Icon iconType="person" />
                 }
               </div>
@@ -62,9 +68,9 @@ export const Profile = ({ userName, onError }) => {
                   userName, 
                   event, 
                   setFileState, 
-                  () => apiService.fetchUserFiles(userName, setUserFiles)
+                  () => apiService.fetchUserAvatar(userName, setUserAvatar)
                 )}/>
-                <Button onClick={addNewFile}>Add new file</Button>
+                <Button onClick={() => addNewFile(fileRef)}>Add new file</Button>
               </div> 
             </div>
 				  </div>
