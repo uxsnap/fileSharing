@@ -2,21 +2,25 @@ package com.example.fileSharing.controller;
 
 import com.example.fileSharing.dto.FileNameDto;
 import com.example.fileSharing.dto.FilesDto;
-import com.example.fileSharing.dto.JsonResponse;
 import com.example.fileSharing.dto.MessageDto;
 import com.example.fileSharing.entity.File;
 import com.example.fileSharing.repository.FileRepository;
 import com.example.fileSharing.service.FileService;
 import lombok.AllArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import sun.misc.IOUtils;
 
+import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+
+import static com.example.fileSharing.helpers.ConstantClass.AVATAR_FOLDER;
 
 @RestController
 @RequestMapping("/file")
@@ -24,6 +28,8 @@ import java.util.UUID;
 public class FileController {
   private final FileRepository fileRepository;
   private final FileService fileService;
+
+  private final ServletContext servletContext;
 
   @GetMapping("/{userName}")
   public ResponseEntity<Object> getUserFiles(@PathVariable(name = "userName") String userName) {
