@@ -25,6 +25,6 @@ public class UserService implements UserDetailsService {
     String currentUser = CurrentLoggedUser.getCurrentUser();
     if (!currentUser.equals(userName)) throw new UsernameNotFoundException("Wrong user");
     User user = this.loadUserByUsername(userName);
-    return user.getAvatar();
+    return user.getAvatar().replace("backend/src", "");
   }
 }

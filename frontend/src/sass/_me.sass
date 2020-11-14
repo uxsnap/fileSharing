@@ -7,16 +7,10 @@
 	&__avatar
 		width: 200px
 		height: 200px
-		padding: 10px
+		// padding: 10px
 		position: relative
 		border: 2px solid $mainColor
 		border-radius: 4px
-		&:before
-			content: ''
-			display: block
-			height: 100%
-			width: 100%
-			background: $mainGrey
 		& input
 			display: none
 		& .iicon
@@ -26,6 +20,12 @@
 			transform: translate(-50%, -50%)
 			font-size: 150px
 			color: $mainColor
+		& img
+	    width: 150px
+	    padding: 5px
+	    position: absolute
+	    left: 50%
+	    transform: translateX(-50%)
 	&__info
 		margin-top: 20px
 		max-width: 250px

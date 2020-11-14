@@ -7,6 +7,7 @@ export default class {
   }
 
   handleNewAvatar = async (userName, event, cb, successCb) => {
+		console.log(event.target);
 		if (!event.target.files.length) {
 	    cb(RES_STATUS.OK);
 	    return;

@@ -11,7 +11,7 @@ export const getUserFiles = (userName) => {
 
 export const uploadAvatar = (userName, file) => {
 	const bodyFormData = new FormData();
-	bodyFormData.append('file', file);
+	bodyFormData.append('avatar', file);
 	const token = localStorage.getItem('TOKEN');
 	return axios({
 		method: 'post',

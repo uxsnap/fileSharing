@@ -5,7 +5,6 @@ export const onLogin = async (username, password) => {
 		username,
 		password
 	});
-	console.log(res);
 	if (res.data.token) {
 		localStorage.setItem('TOKEN', res.data.token);
 		localStorage.setItem('USER_NAME', res.data.username);

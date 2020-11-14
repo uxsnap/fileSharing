@@ -23,6 +23,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.FileSystem;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 
@@ -126,12 +127,21 @@ public class FileService {
     if (!curFileExtension.matches("png|jpe?g")) throw new Exception("Wrong exception");
     User user = userRepository.findByUsername(userName);
     if (user == null) throw new UsernameNotFoundException("User cannot be found");
-    String path = AVATAR_FOLDER + avatar.getOriginalFilename();
+    String prevAvatar = user.getAvatar();
+    if (prevAvatar != null) {
+      Path prevFilePath = Paths.get(prevAvatar);
+      Files.delete(prevFilePath);
+    }
+    String curFileName = String.format(
+      "%s.%s",
+      UUID.randomUUID().toString(),
+      curFileExtension
+    );
+    String path = AVATAR_FOLDER + curFileName;
+    Path curPath = Paths.get(path);
     user.setAvatar(path);
     try {
-      FileOutputStream output = new FileOutputStream(path);
-      output.write(bytes);
-      output.close();
+      Files.write(curPath, bytes);
       userRepository.save(user);
     } catch (IOException exception) {
       throw new IOException("Cannot save avatar-file");

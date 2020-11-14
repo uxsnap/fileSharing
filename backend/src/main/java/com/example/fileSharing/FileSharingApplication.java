@@ -38,7 +38,6 @@ public class FileSharingApplication {
 			public void addResourceHandlers(ResourceHandlerRegistry registry) {
 				/* Kinda stupid solution for resource handling. Deeper research required */
 				String avatarPath = String.format("%s/%s", System.getProperty("user.dir"), AVATAR_FOLDER);
-				System.out.println("file:///" + avatarPath);
 				registry
 					.addResourceHandler("/avatars/**")
 					.addResourceLocations("file:///" + avatarPath);

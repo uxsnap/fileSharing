@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Row, Col, Input, Icon, IconList, FileList, Button } from 'components';
-import { defaultResponseObject, defaultStatusObject, lazyRender, FILE_STATE } from 'utils';
+import { defaultResponseObject, defaultStatusObject, lazyRender, FILE_STATE, getUserAvatar } from 'utils';
 import ApiService from 'service/ApiService';
 
 export const Profile = ({ userName, onError }) => {
@@ -13,12 +13,14 @@ export const Profile = ({ userName, onError }) => {
   const [search, setSearch] = useState("");
 
   const fileRef = useRef(null);
+  const avatarRef = useRef(null);
 
   const apiService = new ApiService(onError);
 
   useEffect(() => {
     apiService.fetchUserData(userName, setUserInfo);
     apiService.fetchUserFiles(userName, setUserFiles);
+    apiService.fetchUserAvatar(userName, setUserAvatar);
   }, [userName, onError]);
 
   const addNewFile = (ref) => {
@@ -49,15 +51,16 @@ export const Profile = ({ userName, onError }) => {
         <Col>
 				  <div className="profile__me me">
           	<div>
-    					<div className="me__avatar" onClick={() => apiService.handleNewAvatar(userName)}>
-                <input type="file" name="file" ref={fileRef} onChange={(event) => apiService.handleNewAvatar(
+    					<div className="me__avatar">
+                <input type="file" name="file" ref={avatarRef} onChange={(event) => apiService.handleNewAvatar(
                   userName, 
                   event, 
-                  setAvatarState
+                  setAvatarState,
+                  () => apiService.fetchUserAvatar(userName, setUserAvatar)
                 )}/>
-                {userAvatar.length
-                  ? <img src={userAvatar} alt="ME"/>
-                  : <Icon iconType="person" />
+                {userAvatar.data
+                  ? <img src={getUserAvatar(userAvatar.data)} alt="ME" onClick={() => addNewFile(avatarRef)} />
+                  : <Icon iconType="person" onClick={() => addNewFile(avatarRef)} />
                 }
               </div>
   					  <div className="me__info">
@@ -68,7 +71,7 @@ export const Profile = ({ userName, onError }) => {
                   userName, 
                   event, 
                   setFileState, 
-                  () => apiService.fetchUserAvatar(userName, setUserAvatar)
+                  () => apiService.fetchUserFiles(userName, setUserFiles)
                 )}/>
                 <Button onClick={() => addNewFile(fileRef)}>Add new file</Button>
               </div> 
