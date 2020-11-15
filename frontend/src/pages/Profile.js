@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Row, Col, Input, Icon, IconList, FileList, Button } from 'components';
+import { Row, Col, Input, Icon, IconList, FileList, Button, AvatarItem, InputSelect, Avatar } from 'components';
 import { defaultResponseObject, defaultStatusObject, lazyRender, FILE_STATE, getUserAvatar } from 'utils';
 import ApiService from 'service/ApiService';
 
@@ -27,6 +27,11 @@ export const Profile = ({ userName, onError }) => {
     ref.current.click();
   };
 
+  const selectItems = [
+    { img: getUserAvatar(userAvatar.data), name: 'test', icon: 'plus' },
+    { img: '', name: 'test', icon: 'plus' }
+  ];
+
 	return (
 		<div className="profile">
 			<Row>
@@ -37,12 +42,14 @@ export const Profile = ({ userName, onError }) => {
               <span className="profile-header__name">FILES</span>
   					</div>		
   					<div className="profile-header__search">
-  						<Input 
-                value={search} 
+              <InputSelect 
+                value={search}
                 onChange={setSearch}
                 placeholder="Search for friends"
                 rightIcon="loupe"
-              />
+                Component={AvatarItem}
+                items={selectItems}
+              /> 
   					</div>		
 				  </div>
         </Col>
@@ -58,10 +65,7 @@ export const Profile = ({ userName, onError }) => {
                   setAvatarState,
                   () => apiService.fetchUserAvatar(userName, setUserAvatar)
                 )}/>
-                {userAvatar.data
-                  ? <img src={getUserAvatar(userAvatar.data)} alt="ME" onClick={() => addNewFile(avatarRef)} />
-                  : <Icon iconType="person" onClick={() => addNewFile(avatarRef)} />
-                }
+                <Avatar data={getUserAvatar(userAvatar.data)} onClick={() => addNewFile(avatarRef)} />
               </div>
   					  <div className="me__info">
                 {lazyRender(<IconList items={infoList.data} />, infoList.status)}

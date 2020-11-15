@@ -9,3 +9,6 @@ export { default as File } from './File';
 export { default as FileList } from './FileList';
 export { default as Loader } from './Loader';
 export { default as ErrorWrapper } from './ErrorWrapper';
+export { default as InputSelect } from './InputSelect';
+export { default as AvatarItem } from './AvatarItem';
+export { default as Avatar } from './Avatar';
