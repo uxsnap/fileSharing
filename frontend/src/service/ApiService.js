@@ -1,13 +1,30 @@
 import { defaultResponseObject, RES_STATUS, createPersonInfoList, createPersonFilesList } from 'utils';
-import { getUserData, getUserFiles, uploadFile, deleteFile, editFile, uploadAvatar, getUserAvatar } from 'api';
+import { getUserData, getUserFiles, uploadFile, deleteFile, editFile, uploadAvatar, getUserAvatar, getUsers } from 'api';
 
 export default class {
 	constructor(onError) {
 		this.onError = onError;
   }
 
+  handleGetUsers = async (search, cb) => {
+  	try {
+  		const res = await getUsers(search);
+  		cb({
+	      ...defaultResponseObject(),
+	      data: [],
+      	status: RES_STATUS.OK
+	    });
+  	} catch (error) {
+  		cb({
+	      ...defaultResponseObject(),
+      	status: RES_STATUS.ERROR
+	    });
+	    console.log(error);
+	    this.onError(error);
+  	}
+  };
+
   handleNewAvatar = async (userName, event, cb, successCb) => {
-		console.log(event.target);
 		if (!event.target.files.length) {
 	    cb(RES_STATUS.OK);
 	    return;

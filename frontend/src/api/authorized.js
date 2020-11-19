@@ -1,6 +1,6 @@
 import queryExecute from './queryExecute';
 
-export default (...params) => {
+export default (method, url, params, cancelObject) => {
 	const token = localStorage.getItem('TOKEN');
-	return queryExecute(...params, { headers: { "Authorization": `Bearer ${token}` }});
+	return queryExecute(method, url, { ...params, cancelObject }, { headers: { "Authorization": `Bearer ${token}` }});
 }

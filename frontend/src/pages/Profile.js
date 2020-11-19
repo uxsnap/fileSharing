@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Row, Col, Input, Icon, IconList, FileList, Button, AvatarItem, InputSelect, Avatar } from 'components';
-import { defaultResponseObject, defaultStatusObject, lazyRender, FILE_STATE, getUserAvatar } from 'utils';
+import { defaultResponseObject, defaultStatusObject, lazyRender, FILE_STATE, getUserAvatar, serializeUsers } from 'utils';
 import ApiService from 'service/ApiService';
 
 export const Profile = ({ userName, onError }) => {
@@ -10,6 +10,7 @@ export const Profile = ({ userName, onError }) => {
 	const [infoList, setUserInfo] = useState(defaultResponseObject());
   const [fileItems, setUserFiles] = useState(defaultResponseObject());
   const [userAvatar, setUserAvatar] = useState(defaultResponseObject());
+  const [users, setUsers] = useState(defaultResponseObject());
   const [search, setSearch] = useState("");
 
   const fileRef = useRef(null);
@@ -27,10 +28,10 @@ export const Profile = ({ userName, onError }) => {
     ref.current.click();
   };
 
-  const selectItems = [
-    { img: getUserAvatar(userAvatar.data), name: 'test', icon: 'plus' },
-    { img: '', name: 'test', icon: 'plus' }
-  ];
+  const handleSetSearch = async (search) => {
+    setSearch(search);
+    await apiService.handleGetUsers(search, setUsers);
+  };
 
 	return (
 		<div className="profile">
@@ -44,11 +45,11 @@ export const Profile = ({ userName, onError }) => {
   					<div className="profile-header__search">
               <InputSelect 
                 value={search}
-                onChange={setSearch}
+                onChange={handleSetSearch}
                 placeholder="Search for friends"
                 rightIcon="loupe"
                 Component={AvatarItem}
-                items={selectItems}
+                items={users && users.length ? serializeUsers(users) : []}
               /> 
   					</div>		
 				  </div>

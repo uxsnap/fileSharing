@@ -1,6 +1,9 @@
 import authorized from './authorized';
 import axios from 'axios';
 
+// Cancel token object
+const CancelToken = axios.CancelToken;
+
 export const getUserData = (userName) => {
 	return authorized('get', `/user/${userName}`);
 };
@@ -26,4 +29,9 @@ export const uploadAvatar = (userName, file) => {
 
 export const getUserAvatar = (userName) => {
 	return authorized('get', `/user/${userName}/avatar`);
+};
+
+let getUsersCancel = { cancel: undefined };
+export const getUsers = (userName) => {
+	return authorized('get', `/user/all`, { userName }, getUsersCancel);
 };

@@ -1,10 +1,12 @@
 package com.example.fileSharing.controller;
 
 import com.example.fileSharing.dto.*;
+import com.example.fileSharing.entity.User;
 import com.example.fileSharing.service.FileService;
 import com.example.fileSharing.service.FriendService;
 import com.example.fileSharing.service.UserService;
 import lombok.AllArgsConstructor;
+import org.hibernate.annotations.BatchSize;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -12,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.websocket.server.PathParam;
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -21,6 +24,23 @@ public class UserController {
   private final FriendService friendService;
   private final UserService userService;
   private final FileService fileService;
+
+  @GetMapping("/all")
+  @BatchSize(size = 100)
+  public ResponseEntity<UsersDto> getUsers(
+    @PathParam("userName") String userName
+  ) {
+    UsersDto usersDto = new UsersDto();
+    try {
+      List<UserInfoDto> users = userService.getUsers(userName);
+      usersDto.setUsers(users);
+      usersDto.setMessage("OK");
+      return new ResponseEntity<>(usersDto, HttpStatus.OK);
+    } catch (Exception e) {
+      usersDto.setMessage("Error while fetching users");
+      return new ResponseEntity<>(usersDto, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
 
   @GetMapping("/{userName}")
   public ResponseEntity<Object> getUser(

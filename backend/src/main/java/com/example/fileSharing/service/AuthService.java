@@ -1,9 +1,6 @@
 package com.example.fileSharing.service;
 
-import com.example.fileSharing.dto.MessageDto;
-import com.example.fileSharing.dto.JsonResponse;
-import com.example.fileSharing.dto.JwtResponse;
-import com.example.fileSharing.dto.UserDto;
+import com.example.fileSharing.dto.*;
 import com.example.fileSharing.entity.Role;
 import com.example.fileSharing.entity.User;
 import com.example.fileSharing.helpers.ConstantClass;
@@ -33,9 +30,9 @@ public class AuthService {
   private final PasswordEncoder passwordEncoder;
   private final AuthenticationManager authenticationManager;
 
-  public ResponseEntity<Object> loginUser(UserDto userDto) {
+  public ResponseEntity<Object> loginUser(UserAndPassAuthDto userDto) {
     try {
-      String username = userDto.getUsername();
+      String username = userDto.getUserName();
 
       Authentication authentication = new UsernamePasswordAuthenticationToken(
         username,
@@ -58,16 +55,16 @@ public class AuthService {
     }
   }
 
-  public ResponseEntity<MessageDto> registerNewUserAccount(UserDto accountDto)  {
+  public ResponseEntity<MessageDto> registerNewUserAccount(UserAndPassAuthDto accountDto)  {
     JsonResponse response = new JsonResponse();
-    User found = userRepository.findByUsername(accountDto.getUsername());
+    User found = userRepository.findByUsername(accountDto.getUserName());
     if (found != null) {
       return new ResponseEntity<>(new MessageDto("User already created"), HttpStatus.BAD_REQUEST);
 //      return response;
     }
     try {
       User user = new User();
-      user.setUsername(accountDto.getUsername());
+      user.setUsername(accountDto.getUserName());
       user.setPassword(passwordEncoder.encode(accountDto.getPassword()));
       Role curRole = roleRepository.findByName("USER");
       user.setRoles(

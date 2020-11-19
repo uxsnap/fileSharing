@@ -1,11 +1,10 @@
 package com.example.fileSharing.helpers;
 
-import com.example.fileSharing.dto.UserAndPassAuthRequest;
+import com.example.fileSharing.dto.UserAndPassAuthDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import lombok.AllArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -13,7 +12,6 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -30,14 +28,14 @@ public class JwtAuthFilter extends UsernamePasswordAuthenticationFilter {
     HttpServletResponse response
   ) throws AuthenticationException {
     try {
-      UserAndPassAuthRequest userAndPassAuthRequest = new ObjectMapper().readValue(
+      UserAndPassAuthDto userAndPassAuthDto = new ObjectMapper().readValue(
         request.getInputStream(),
-        UserAndPassAuthRequest.class
+        UserAndPassAuthDto.class
       );
 
       Authentication authentication = new UsernamePasswordAuthenticationToken(
-        userAndPassAuthRequest.getUsername(),
-        userAndPassAuthRequest.getPassword()
+        userAndPassAuthDto.getUserName(),
+        userAndPassAuthDto.getPassword()
       );
 
       return authenticationManager.authenticate(authentication);

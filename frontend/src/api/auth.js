@@ -1,8 +1,8 @@
 import queryExecute from './queryExecute';
 
-export const onLogin = async (username, password) => {
+export const onLogin = async (userName, password) => {
 	const res = await queryExecute('post', '/auth/login', {
-		username,
+		userName,
 		password
 	});
 	if (res.data.token) {
@@ -12,9 +12,9 @@ export const onLogin = async (username, password) => {
 	return res;
 };
 
-export const onRegister = async (username, password) => {
+export const onRegister = async (userName, password) => {
  	return await queryExecute('post', '/auth/register', {
-		username,
+		userName,
 		password
 	});
 };
