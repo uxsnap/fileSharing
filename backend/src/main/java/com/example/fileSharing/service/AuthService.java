@@ -14,10 +14,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import java.time.LocalDate;
 import java.util.*;
 
@@ -76,6 +80,23 @@ public class AuthService {
     } catch (Exception e) {
       response.setMessage("Cannot save user");
       return new ResponseEntity<MessageDto>(HttpStatus.BAD_GATEWAY);
+    }
+  }
+
+  public ResponseEntity<MessageDto> logoutUser(HttpServletRequest request) {
+    try {
+      HttpSession session;
+      SecurityContextHolder.clearContext();
+      session = request.getSession(false);
+      if(session != null) {
+        session.invalidate();
+      }
+      for(Cookie cookie : request.getCookies()) {
+        cookie.setMaxAge(0);
+      }
+      return new ResponseEntity<>(new MessageDto("OK"), HttpStatus.OK);
+    } catch (Exception e) {
+      return new ResponseEntity<>(new MessageDto("Cannot logout user"), HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 }

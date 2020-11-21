@@ -1,3 +1,3 @@
-export { onLogin, onRegister } from './auth';
+export { onLogin, onRegister, onLogout } from './auth';
 export { getUserData, getUserFiles, uploadAvatar, getUserAvatar, getUsers } from './user';
 export { uploadFile, deleteFile, editFile } from './file';

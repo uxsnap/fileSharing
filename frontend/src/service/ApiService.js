@@ -1,5 +1,5 @@
 import { defaultResponseObject, RES_STATUS, createPersonInfoList, createPersonFilesList } from 'utils';
-import { getUserData, getUserFiles, uploadFile, deleteFile, editFile, uploadAvatar, getUserAvatar, getUsers } from 'api';
+import { getUserData, getUserFiles, uploadFile, deleteFile, editFile, uploadAvatar, getUserAvatar, getUsers, onLogout} from 'api';
 
 export default class {
 	constructor(onError) {
@@ -138,4 +138,14 @@ export default class {
 	    this.onError(error);
 	  }
 	}
+
+	handleLogout = async () => {
+		try {
+			await onLogout();
+			localStorage.removeItem('TOKEN');
+			localStorage.removeItem('USER_NAME');
+		} catch (error) {
+			this.onError(error);
+		}
+	};
 }

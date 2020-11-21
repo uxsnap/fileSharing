@@ -2,7 +2,6 @@
 	background: $mainColor
 	display: flex
 	align-items: center
-	justify-content: space-between
 	padding: 10px 20px
 	&__brand
 		cursor: pointer
@@ -14,7 +13,15 @@
 		font-size: 30px
 		color: white
 	&__search
+		margin-left: auto
+		margin-right: 20px
 		width: 250px 
 		& .iinput
 			& .iicon:before
 				color: $mainColor
+	&__logout
+		& .ibutton
+	    background: #fff
+	    border-radius: 5px
+	    font-size: 16px
+	    padding: 8px 12px

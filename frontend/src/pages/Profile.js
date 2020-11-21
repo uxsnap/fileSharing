@@ -33,6 +33,10 @@ export const Profile = ({ userName, onError }) => {
     await apiService.handleGetUsers(search, setUsers);
   };
 
+  const onLogout = async () => {
+    await apiService.handleLogout();
+  };
+
 	return (
 		<div className="profile">
 			<Row>
@@ -51,7 +55,10 @@ export const Profile = ({ userName, onError }) => {
                 Component={AvatarItem}
                 items={users && users.length ? serializeUsers(users) : []}
               /> 
-  					</div>		
+  					</div>
+            <div className="profile-header__logout">
+              <Button onClick={onLogout}>Logout</Button>  
+            </div>		
 				  </div>
         </Col>
 			</Row>

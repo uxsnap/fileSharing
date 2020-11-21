@@ -18,3 +18,7 @@ export const onRegister = async (userName, password) => {
 		password
 	});
 };
+
+export const onLogout = () => {
+	return queryExecute('post', `/auth/logout`);
+};
