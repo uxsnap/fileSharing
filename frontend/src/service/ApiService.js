@@ -24,7 +24,7 @@ export default class {
   	}
   };
 
-  handleNewAvatar = async (userName, event, cb, successCb) => {
+  handleNewAvatar = async (event, cb, successCb) => {
 		if (!event.target.files.length) {
 	    cb(RES_STATUS.OK);
 	    return;
@@ -32,7 +32,7 @@ export default class {
 	  const file = event.target.files[0];
 	  cb(RES_STATUS.LOADING);
 	  try {
-	    const res = await uploadAvatar(userName, file);
+	    const res = await uploadAvatar(file);
 	    cb(RES_STATUS.OK);
 	    successCb();
 	  } catch (error) {
@@ -41,7 +41,7 @@ export default class {
 	  }
   };
 
-  handleFileUpload = async (userName, event, cb, successCb) => {
+  handleFileUpload = async (event, cb, successCb) => {
 	  if (!event.target.files.length) {
 	    cb(RES_STATUS.OK);
 	    return;
@@ -49,7 +49,7 @@ export default class {
 	  const file = event.target.files[0];
 	  cb(RES_STATUS.LOADING);
 	  try {
-	    const res = await uploadFile(userName, file);
+	    const res = await uploadFile(file);
 	    cb(RES_STATUS.OK);
 	    successCb();
 	  } catch (error) {
@@ -95,9 +95,9 @@ export default class {
 	  }
 	}
 
-	fetchUserData = async (userName, cb) => {
+	fetchUserData = async (cb) => {
 	  try {
-	   	const res = await getUserData(userName);
+	   	const res = await getUserData();
 	    cb({ 
 	      ...defaultResponseObject(), 
 	      data: createPersonInfoList(res.data), 
@@ -110,9 +110,9 @@ export default class {
 	}
 
 
-	fetchUserFiles = async (userName, cb) => {
+	fetchUserFiles = async (cb) => {
 	  try {
-	    const res = await getUserFiles(userName);
+	    const res = await getUserFiles();
 	    cb({ 
 	      ...defaultResponseObject(), 
 	      data: createPersonFilesList(res.data), 
@@ -125,9 +125,9 @@ export default class {
 	}
 
 
-	fetchUserAvatar = async (userName, cb) => {
+	fetchUserAvatar = async (cb) => {
 		try {
-	    const res = await getUserAvatar(userName);
+	    const res = await getUserAvatar();
 	    cb({ 
 	      ...defaultResponseObject(), 
 	      data: res.data, 

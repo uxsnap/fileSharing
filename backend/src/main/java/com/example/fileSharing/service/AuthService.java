@@ -83,20 +83,7 @@ public class AuthService {
     }
   }
 
-  public ResponseEntity<MessageDto> logoutUser(HttpServletRequest request) {
-    try {
-      HttpSession session;
-      SecurityContextHolder.clearContext();
-      session = request.getSession(false);
-      if(session != null) {
-        session.invalidate();
-      }
-      for(Cookie cookie : request.getCookies()) {
-        cookie.setMaxAge(0);
-      }
-      return new ResponseEntity<>(new MessageDto("OK"), HttpStatus.OK);
-    } catch (Exception e) {
-      return new ResponseEntity<>(new MessageDto("Cannot logout user"), HttpStatus.INTERNAL_SERVER_ERROR);
-    }
+  public ResponseEntity<MessageDto> logoutUser() {
+    return new ResponseEntity<>(new MessageDto("OK"), HttpStatus.OK);
   }
 }

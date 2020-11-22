@@ -3,6 +3,7 @@ package com.example.fileSharing.controller;
 import com.example.fileSharing.dto.MessageDto;
 import com.example.fileSharing.dto.UserAndPassAuthDto;
 import com.example.fileSharing.entity.User;
+import com.example.fileSharing.helpers.CurrentLoggedUser;
 import com.example.fileSharing.repository.UserRepository;
 import com.example.fileSharing.service.AuthService;
 import lombok.AllArgsConstructor;
@@ -36,14 +37,15 @@ public class AuthController {
     return authService.registerNewUserAccount(userDto);
   }
 
-  @GetMapping("/users/{userName}")
-  public User getUser(@PathVariable(name = "userName") String userName) {
+  @GetMapping("/users")
+  public User getUser() {
+    String userName = CurrentLoggedUser.getCurrentUser();
     return userRepository.findByUsername(userName);
   }
 
   @GetMapping("/logout")
   public ResponseEntity<MessageDto> logoutUser(HttpServletRequest request) {
-    return new ResponseEntity<>(new MessageDto("OK"), HttpStatus.OK);
+    return authService.logoutUser();
   }
 
   @GetMapping("/context")

@@ -39,8 +39,6 @@ public class FileService {
 
   public List<File> getAllUserFiles(String userName) {
     User user = userRepository.findByUsername(userName);
-    String currentUser = CurrentLoggedUser.getCurrentUser();
-    if (user == null || !userName.equals(currentUser)) return Collections.emptyList();
     return fileRepository.findAllByUserId(user.getId());
   }
 
@@ -70,8 +68,6 @@ public class FileService {
 
 //  Work out needed exceptions
   public void uploadFile(String userName, MultipartFile file) throws Exception {
-    String currentUser = CurrentLoggedUser.getCurrentUser();
-    if (!currentUser.equals(userName)) throw new UsernameNotFoundException("Wrong user");
     byte[] bytes = file.getBytes();
     String curFileExtension =
       file

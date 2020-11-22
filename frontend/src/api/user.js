@@ -4,21 +4,21 @@ import axios from 'axios';
 // Cancel token object
 const CancelToken = axios.CancelToken;
 
-export const getUserData = (userName) => {
-	return authorized('get', `/user/${userName}`);
+export const getUserData = () => {
+	return authorized('get', '/user');
 };
 
 export const getUserFiles = (userName) => {
-	return authorized('get', `/file/${userName}`);
+	return authorized('get', '/file');
 };
 
-export const uploadAvatar = (userName, file) => {
+export const uploadAvatar = (file) => {
 	const bodyFormData = new FormData();
 	bodyFormData.append('avatar', file);
 	const token = localStorage.getItem('TOKEN');
 	return axios({
 		method: 'post',
-		url: process.env.REACT_APP_BASE_URL + `/user/${userName}/avatar`,
+		url: process.env.REACT_APP_BASE_URL + `/user/avatar`,
 		data: bodyFormData,
 		headers: { 
 			'Authorization': `Bearer ${token}`, 
@@ -27,11 +27,11 @@ export const uploadAvatar = (userName, file) => {
 	});
 };
 
-export const getUserAvatar = (userName) => {
-	return authorized('get', `/user/${userName}/avatar`);
+export const getUserAvatar = () => {
+	return authorized('get', '/user/avatar');
 };
 
 let getUsersCancel = { cancel: undefined };
-export const getUsers = (userName) => {
-	return authorized('get', `/user/all`, { userName }, getUsersCancel);
+export const getUsers = () => {
+	return authorized('get', `/user/all`, {}, getUsersCancel);
 };

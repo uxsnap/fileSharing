@@ -4,6 +4,7 @@ import com.example.fileSharing.dto.FileNameDto;
 import com.example.fileSharing.dto.FilesDto;
 import com.example.fileSharing.dto.MessageDto;
 import com.example.fileSharing.entity.File;
+import com.example.fileSharing.helpers.CurrentLoggedUser;
 import com.example.fileSharing.repository.FileRepository;
 import com.example.fileSharing.service.FileService;
 import lombok.AllArgsConstructor;
@@ -31,9 +32,10 @@ public class FileController {
 
   private final ServletContext servletContext;
 
-  @GetMapping("/{userName}")
-  public ResponseEntity<Object> getUserFiles(@PathVariable(name = "userName") String userName) {
+  @GetMapping
+  public ResponseEntity<Object> getUserFiles() {
     try {
+      String userName = CurrentLoggedUser.getCurrentUser();
       List<File> files = fileService.getAllUserFiles(userName);
       return new ResponseEntity<>(new FilesDto(files), HttpStatus.OK);
     } catch (Exception e) {
@@ -41,12 +43,12 @@ public class FileController {
     }
   }
 
-  @PostMapping("/{userName}")
+  @PostMapping
   public ResponseEntity<Object> uploadFile(
-    @PathVariable(name = "userName") String userName,
     @RequestParam(name = "file") MultipartFile file
   ) throws IOException {
     try {
+      String userName = CurrentLoggedUser.getCurrentUser();
       fileService.uploadFile(userName, file);
       return new ResponseEntity<>(new MessageDto("OK"), HttpStatus.OK);
     } catch (Exception e) {

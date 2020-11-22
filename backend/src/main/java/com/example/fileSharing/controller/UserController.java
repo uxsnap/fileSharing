@@ -2,6 +2,7 @@ package com.example.fileSharing.controller;
 
 import com.example.fileSharing.dto.*;
 import com.example.fileSharing.entity.User;
+import com.example.fileSharing.helpers.CurrentLoggedUser;
 import com.example.fileSharing.service.FileService;
 import com.example.fileSharing.service.FriendService;
 import com.example.fileSharing.service.UserService;
@@ -42,11 +43,10 @@ public class UserController {
     }
   }
 
-  @GetMapping("/{userName}")
-  public ResponseEntity<Object> getUser(
-    @PathVariable("userName") String userName
-  ) {
+  @GetMapping
+  public ResponseEntity<Object> getUser() {
     try {
+      String userName = CurrentLoggedUser.getCurrentUser();
       UserDetails user = userService.loadUserByUsername(userName);
       if (user != null)
         return new ResponseEntity<>(new UserInfoDto(userName), HttpStatus.OK);
@@ -63,11 +63,11 @@ public class UserController {
     return friendService.addFriend(friendDto);
   }
 
-  @GetMapping("/{userName}/avatar")
+  @GetMapping("/avatar")
   public ResponseEntity<AvatarDto> getUserAvatar(
-    @PathVariable("userName") String userName
   ) {
     try {
+      String userName = CurrentLoggedUser.getCurrentUser();
       String avatar = userService.getAvatar(userName);
       AvatarDto avatarDto = new AvatarDto();
       avatarDto.setAvatar(avatar);
@@ -81,12 +81,12 @@ public class UserController {
     }
   }
 
-  @PostMapping("/{userName}/avatar")
+  @PostMapping("/avatar")
   public ResponseEntity<MessageDto> setUserAvatar(
-    @PathVariable("userName") String userName,
     @RequestParam(name = "avatar") MultipartFile avatar
   ) {
     try {
+      String userName = CurrentLoggedUser.getCurrentUser();
       fileService.uploadAvatar(userName, avatar);
       return new ResponseEntity<>(new MessageDto("OK"), HttpStatus.OK);
     } catch (Exception e) {

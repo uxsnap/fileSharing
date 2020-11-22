@@ -19,9 +19,9 @@ export const Profile = ({ userName, onError }) => {
   const apiService = new ApiService(onError);
 
   useEffect(() => {
-    apiService.fetchUserData(userName, setUserInfo);
-    apiService.fetchUserFiles(userName, setUserFiles);
-    apiService.fetchUserAvatar(userName, setUserAvatar);
+    apiService.fetchUserData(setUserInfo);
+    apiService.fetchUserFiles(setUserFiles);
+    apiService.fetchUserAvatar(setUserAvatar);
   }, [userName, onError]);
 
   const addNewFile = (ref) => {
@@ -68,10 +68,9 @@ export const Profile = ({ userName, onError }) => {
           	<div>
     					<div className="me__avatar">
                 <input type="file" name="file" ref={avatarRef} onChange={(event) => apiService.handleNewAvatar(
-                  userName, 
                   event, 
                   setAvatarState,
-                  () => apiService.fetchUserAvatar(userName, setUserAvatar)
+                  () => apiService.fetchUserAvatar(setUserAvatar)
                 )}/>
                 <Avatar data={getUserAvatar(userAvatar.data)} onClick={() => addNewFile(avatarRef)} />
               </div>
@@ -80,10 +79,9 @@ export const Profile = ({ userName, onError }) => {
               </div>
               <div className="profile__add-file">
                 <input type="file" name="file" ref={fileRef} onChange={(event) => apiService.handleFileUpload(
-                  userName, 
                   event, 
                   setFileState, 
-                  () => apiService.fetchUserFiles(userName, setUserFiles)
+                  () => apiService.fetchUserFiles(setUserFiles)
                 )}/>
                 <Button onClick={() => addNewFile(fileRef)}>Add new file</Button>
               </div> 
