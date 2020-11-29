@@ -4,11 +4,11 @@ import { Auth } from 'pages/Auth';
 import { Profile } from 'pages/Profile';
 
 function App() {
-  const [userName, setUserName] = useState('');
+  const [token, setToken] = useState('');
   const [error, setError] = useState('');
 
   const checkPage = () => {
-    setUserName(localStorage.getItem('USER_NAME'));
+    setToken(localStorage.getItem('TOKEN'));
   };
 
   useEffect(() => {
@@ -18,7 +18,7 @@ function App() {
   return (
     <div className="App">
       <ErrorWrapper error={error} onClose={() => setError('')}>
-        {userName ? <Profile onError={setError} userName={userName} /> : <Auth checkPage={checkPage}/>}
+        {token ? <Profile onError={setError} onLogout={checkPage} /> : <Auth checkPage={checkPage}/>}
       </ErrorWrapper>
     </div>
   );

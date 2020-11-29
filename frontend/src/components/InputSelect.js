@@ -8,7 +8,9 @@ export default ({
 	placeholder, 
 	items, 
 	Component, 
-	componentProps 
+	Stub,
+	componentProps,
+	minLength
 }) => {
   return (
 		<div className="input-select">
@@ -20,11 +22,13 @@ export default ({
 	        rightIcon={rightIcon}
 	      />
     	</div>
-    	<div className="input-select__dropdown">
-    		{items.length && items.map((item) => (
-  				<Component {...item} />
-    		))}
-    	</div>
+    	{items && value.length > minLength &&
+	    	<div className="input-select__dropdown">
+	    		{items.length ? items.map((item) => (
+	  				<Component {...item} />
+	    		)) : Stub ? <Stub /> : ''}
+	    	</div>
+    	}
 		</div>
   );
 };

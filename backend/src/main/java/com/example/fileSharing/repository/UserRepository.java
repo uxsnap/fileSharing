@@ -15,8 +15,8 @@ public interface UserRepository extends JpaRepository<User, UUID> {
 //  User findByEmail(String email);
   User findByUsername(String username);
 
-  @Query("SELECT new com.example.fileSharing.dto.UserInfoDto(u.username, u.avatar) " +
+  @Query("SELECT new com.example.fileSharing.dto.UserInfoDto(u.id, u.username, u.avatar) " +
     "FROM User u where u.username like CONCAT('%', ?2, '%') and u.username <> ?1 and u.id not in " +
-    "(select u.id from u join UserFriend uf on u.id = uf.user.id)")
+    "(select uf.friendId from UserFriend uf)")
   List<UserInfoDto> findAllNonFriends(String userName, String search);
 }

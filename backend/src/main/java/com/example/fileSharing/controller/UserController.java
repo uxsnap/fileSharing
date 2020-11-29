@@ -56,13 +56,6 @@ public class UserController {
     }
   }
 
-  @PostMapping("/add/friend")
-  public JsonResponse addFriend(
-    @RequestBody List<FriendDto> friendDto
-  ) {
-    return friendService.addFriend(friendDto);
-  }
-
   @GetMapping("/avatar")
   public ResponseEntity<AvatarDto> getUserAvatar(
   ) {

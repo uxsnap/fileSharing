@@ -3,6 +3,7 @@ import axios from 'axios';
 const CancelToken = axios.CancelToken;
 
 export default async (method, api, params = {}) => {
+	const token = localStorage.getItem('TOKEN');
 	const { cancelObject, ...other } = params;
 	try {
 		if (cancelObject && cancelObject.cancel) cancelObject.cancel(); 
@@ -10,7 +11,8 @@ export default async (method, api, params = {}) => {
 		 	...other,
 		 	cancelToken: cancelObject ? new CancelToken(function executor(c) {
 		    cancelObject.cancel = c;
-		  }) : undefined
+		  }) : undefined,
+			headers: { "Authorization": "Bearer " + token }
 		});
 		return res;
 	} catch(error) {

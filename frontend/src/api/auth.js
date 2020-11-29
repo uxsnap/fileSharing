@@ -1,7 +1,8 @@
-import queryExecute from './queryExecute';
+import axios from 'axios';
+const { REACT_APP_BASE_URL } = process.env; 
 
 export const onLogin = async (userName, password) => {
-	const res = await queryExecute('post', '/auth/login', {
+	const res = await axios.post(REACT_APP_BASE_URL + '/auth/login', {
 		userName,
 		password
 	});
@@ -13,12 +14,12 @@ export const onLogin = async (userName, password) => {
 };
 
 export const onRegister = async (userName, password) => {
- 	return await queryExecute('post', '/auth/register', {
+ 	return await axios.post(REACT_APP_BASE_URL + '/auth/register', {
 		userName,
 		password
 	});
 };
 
 export const onLogout = () => {
-	return queryExecute('post', `/auth/logout`);
+	return axios.post(REACT_APP_BASE_URL + `/auth/logout`);
 };

@@ -1,15 +1,15 @@
-import authorized from './authorized';
+import queryExecute from './queryExecute';
 import axios from 'axios';
 
 // Cancel token object
 const CancelToken = axios.CancelToken;
 
 export const getUserData = () => {
-	return authorized('get', '/user');
+	return queryExecute('get', '/user');
 };
 
 export const getUserFiles = (userName) => {
-	return authorized('get', '/file');
+	return queryExecute('get', '/file');
 };
 
 export const uploadAvatar = (file) => {
@@ -28,10 +28,10 @@ export const uploadAvatar = (file) => {
 };
 
 export const getUserAvatar = () => {
-	return authorized('get', '/user/avatar');
+	return queryExecute('get', '/user/avatar');
 };
 
 let getUsersCancel = { cancel: undefined };
-export const getUsers = () => {
-	return authorized('get', `/user/all`, {}, getUsersCancel);
+export const getUsers = (userName) => {
+	return queryExecute('get', `/user/all?userName=${userName}`, {}, getUsersCancel);
 };

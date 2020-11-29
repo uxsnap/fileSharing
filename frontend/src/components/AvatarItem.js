@@ -1,8 +1,8 @@
 import React from 'react';
 import { Icon, Avatar } from './index';
 
-export default ({ img, name, icon, onClick, onIconClick }) => (
-	<div class="avatar-item" onClick={onClick}>
+export default ({ id, img, name, icon, onClick, onIconClick }) => (
+	<div class="avatar-item" onClick={() => onClick(id)}>
 		<div class="avatar-item__img">
 			<Avatar data={img} />
 		</div>

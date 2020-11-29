@@ -21,15 +21,16 @@ public class UserFriend {
   @Column(name = "id")
   private UUID id;
 
-  @Column(name = "username")
-  private String userName;
+  @Type(type="uuid-char")
+  @Column(name = "friend_id")
+  private UUID friendId;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "user_id", nullable =  false)
   private User user;
 
-  public UserFriend(String name, User user) {
-    this.userName = name;
+  public UserFriend(UUID friendId, User user) {
+    this.friendId = friendId;
     this.user = user;
   }
 }

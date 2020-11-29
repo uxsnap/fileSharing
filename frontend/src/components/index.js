@@ -12,3 +12,5 @@ export { default as ErrorWrapper } from './ErrorWrapper';
 export { default as InputSelect } from './InputSelect';
 export { default as AvatarItem } from './AvatarItem';
 export { default as Avatar } from './Avatar';
+export { default as SideMenu } from './SideMenu';
+export { default as NoInfo } from './NoInfo';

@@ -13,3 +13,5 @@ export const RES_STATUS = {
 	ERROR: 400,
 	LOADING: -1,
 };
+
+export const MIN_SEARCH_LENGTH = 2;

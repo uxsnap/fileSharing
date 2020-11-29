@@ -1,5 +1,5 @@
 import axios from 'axios';
-import authorized from './authorized';
+import queryExecute from './queryExecute';
 
 export const uploadFile = async (file) => {
 	const bodyFormData = new FormData();
@@ -18,9 +18,9 @@ export const uploadFile = async (file) => {
 };
 
 export const deleteFile = async (fileId) => {
-	return authorized('delete', `/file/${fileId}`);
+	return queryExecute('delete', `/file/${fileId}`);
 };
 
 export const editFile = async (fileId, fileName) => {
-	return authorized('patch', `/file/${fileId}`, { fileName });
+	return queryExecute('patch', `/file/${fileId}`, { fileName });
 };

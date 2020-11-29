@@ -11,17 +11,13 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import sun.misc.IOUtils;
 
 import javax.servlet.ServletContext;
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import static com.example.fileSharing.helpers.ConstantClass.AVATAR_FOLDER;
 
 @RestController
 @RequestMapping("/file")

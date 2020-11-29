@@ -1,11 +1,20 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Row, Col, Input, Icon, IconList, FileList, Button, AvatarItem, InputSelect, Avatar } from 'components';
-import { defaultResponseObject, defaultStatusObject, lazyRender, FILE_STATE, getUserAvatar, serializeUsers } from 'utils';
-import ApiService from 'service/ApiService';
+import { Row, Col, Input, Icon, IconList, FileList, Button, AvatarItem, InputSelect, Avatar, NoInfo, SideMenu } from 'components';
+import { 
+  defaultResponseObject, 
+  defaultStatusObject, 
+  lazyRender,
+  FILE_STATE, 
+  getUserAvatar,
+  serializeUsers,
+  MIN_SEARCH_LENGTH
+} from 'utils';
+import { ApiService, AuthService, FriendService } from 'service';
 
-export const Profile = ({ userName, onError }) => {
+export const Profile = ({ onError, onLogout }) => {
   const [fileState, setFileState] = useState(defaultStatusObject());
   const [avatarState, setAvatarState] = useState(defaultStatusObject());
+  const [friendState, setFriendState] = useState(defaultStatusObject());
 
 	const [infoList, setUserInfo] = useState(defaultResponseObject());
   const [fileItems, setUserFiles] = useState(defaultResponseObject());
@@ -17,12 +26,14 @@ export const Profile = ({ userName, onError }) => {
   const avatarRef = useRef(null);
 
   const apiService = new ApiService(onError);
+  const authService = new AuthService(onError);
+  const friendService = new FriendService(onError);
 
   useEffect(() => {
     apiService.fetchUserData(setUserInfo);
     apiService.fetchUserFiles(setUserFiles);
     apiService.fetchUserAvatar(setUserAvatar);
-  }, [userName, onError]);
+  }, [onError]);
 
   const addNewFile = (ref) => {
     ref.current.click();
@@ -33,8 +44,13 @@ export const Profile = ({ userName, onError }) => {
     await apiService.handleGetUsers(search, setUsers);
   };
 
-  const onLogout = async () => {
-    await apiService.handleLogout();
+  const onClickLogout = async () => {
+    await authService.handleLogout();
+    onLogout();
+  };
+
+  const onAvatarItemClick = async (name) => {
+    await friendService.addFriend(name, setFriendState);
   };
 
 	return (
@@ -53,16 +69,26 @@ export const Profile = ({ userName, onError }) => {
                 placeholder="Search for friends"
                 rightIcon="loupe"
                 Component={AvatarItem}
-                items={users && users.length ? serializeUsers(users) : []}
+                Stub={NoInfo}
+                items={serializeUsers(users.data, onAvatarItemClick)}
+                minLength={MIN_SEARCH_LENGTH}
               /> 
   					</div>
             <div className="profile-header__logout">
-              <Button onClick={onLogout}>Logout</Button>  
+              <Button onClick={onClickLogout}>Logout</Button>  
             </div>		
 				  </div>
         </Col>
 			</Row>
 			<Row curClass="profile__main">
+        <SideMenu>
+          <ul>
+            {Array(100).fill(100).map((item) => (
+              <li>Lorem, ipsum dolor sit, amet consectetur adipisicing elit. Neque ducimus sit reiciendis, officiis sapiente accusantium tempore itaque tenetur eos maiores deleniti eum, illum cumque laudantium, ad iste quam eaque praesentium
+              </li>
+            ))}
+          </ul>
+        </SideMenu>  
         <Col>
 				  <div className="profile__me me">
           	<div>
