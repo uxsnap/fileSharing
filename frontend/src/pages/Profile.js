@@ -19,6 +19,7 @@ export const Profile = ({ onError, onLogout }) => {
 	const [infoList, setUserInfo] = useState(defaultResponseObject());
   const [fileItems, setUserFiles] = useState(defaultResponseObject());
   const [userAvatar, setUserAvatar] = useState(defaultResponseObject());
+  const [friends, setUserFriends] = useState(defaultResponseObject());
   const [users, setUsers] = useState(defaultResponseObject());
   const [search, setSearch] = useState("");
 
@@ -33,6 +34,7 @@ export const Profile = ({ onError, onLogout }) => {
     apiService.fetchUserData(setUserInfo);
     apiService.fetchUserFiles(setUserFiles);
     apiService.fetchUserAvatar(setUserAvatar);
+    friendService.handleGetFriends(setUserFriends);
   }, [onError]);
 
   const addNewFile = (ref) => {
@@ -71,7 +73,9 @@ export const Profile = ({ onError, onLogout }) => {
                 Component={AvatarItem}
                 Stub={NoInfo}
                 items={serializeUsers(users.data, onAvatarItemClick)}
+                checked={friendState.data}
                 minLength={MIN_SEARCH_LENGTH}
+                checkedIcon="check"
               /> 
   					</div>
             <div className="profile-header__logout">

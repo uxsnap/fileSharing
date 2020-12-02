@@ -10,7 +10,9 @@ export default ({
 	Component, 
 	Stub,
 	componentProps,
-	minLength
+	minLength,
+	checked,
+	checkedIcon
 }) => {
   return (
 		<div className="input-select">
@@ -25,7 +27,7 @@ export default ({
     	{items && value.length > minLength &&
 	    	<div className="input-select__dropdown">
 	    		{items.length ? items.map((item) => (
-	  				<Component {...item} />
+	  				<Component {...item} checked={checked && checked.includes(item.id) ? checkedIcon : undefined}/>
 	    		)) : Stub ? <Stub /> : ''}
 	    	</div>
     	}

@@ -1,8 +1,17 @@
 import queryExecute from './queryExecute';
+import axios from 'axios';
 // import { mapToRestArray } from 'u'
 
 export const addFriend = (name) => {
-  return queryExecute('post', '/friend/add', { users: [name] });
+  const token = localStorage.getItem('TOKEN');
+  return axios({
+    method: 'post',
+    url: process.env.REACT_APP_BASE_URL + `/friend/add`,
+    data: { users: [name] },
+    headers: { 
+      'Authorization': `Bearer ${token}`, 
+    }
+  });
 };
 
 export const getAllFriends = () => {

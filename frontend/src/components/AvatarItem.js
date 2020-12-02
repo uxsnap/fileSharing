@@ -1,16 +1,16 @@
 import React from 'react';
 import { Icon, Avatar } from './index';
 
-export default ({ id, img, name, icon, onClick, onIconClick }) => (
-	<div class="avatar-item" onClick={() => onClick(id)}>
-		<div class="avatar-item__img">
+export default ({ id, img, name, icon, onClick, onIconClick, checked }) => (
+	<div className="avatar-item" onClick={() => !checked && onClick(id)}>
+		<div className="avatar-item__img">
 			<Avatar data={img} />
 		</div>
-		<div class="avatar-item__name">
+		<div className="avatar-item__name">
 			{name}
 		</div>
-		<div class="avatar-item__icon">
-			<Icon iconType={icon} onClick={onIconClick}/>
+		<div className={`avatar-item__icon ${!checked && 'active' }`}>
+			<Icon iconType={!checked ? icon : checked} onClick={!checked && onIconClick}/>
 		</div>
 	</div>
 );

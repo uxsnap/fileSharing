@@ -1,4 +1,4 @@
 export { onLogin, onRegister, onLogout } from './auth';
 export { getUserData, getUserFiles, uploadAvatar, getUserAvatar, getUsers } from './user';
 export { uploadFile, deleteFile, editFile } from './file';
-export { addFriend } from './friend';
+export { addFriend, getAllFriends } from './friend';
