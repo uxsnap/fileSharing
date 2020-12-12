@@ -14,3 +14,7 @@ export { default as AvatarItem } from './AvatarItem';
 export { default as Avatar } from './Avatar';
 export { default as SideMenu } from './SideMenu';
 export { default as NoInfo } from './NoInfo';
+export { default as RoundedInitials } from './RoundedInitials';
+export { default as UserFilesContextMenu } from './UserFilesContextMenu';
+export { default as FilesContextMenu } from './FilesContextMenu';
+export { default as IconText } from './IconText';

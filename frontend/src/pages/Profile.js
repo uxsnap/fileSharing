@@ -1,5 +1,20 @@
+import OutsideClickHandler from 'react-outside-click-handler';
 import React, { useState, useEffect, useRef } from 'react';
-import { Row, Col, Input, Icon, IconList, FileList, Button, AvatarItem, InputSelect, Avatar, NoInfo, SideMenu } from 'components';
+import { 
+  Row, 
+  Col, 
+  Input, 
+  Icon, 
+  IconList,
+  FileList,
+  Button,
+  AvatarItem,
+  InputSelect,
+  Avatar,
+  NoInfo,
+  SideMenu,
+  UserFilesContextMenu
+} from 'components';
 import { 
   defaultResponseObject, 
   defaultStatusObject, 
@@ -7,6 +22,7 @@ import {
   FILE_STATE, 
   getUserAvatar,
   serializeUsers,
+  serializeFriends,
   MIN_SEARCH_LENGTH
 } from 'utils';
 import { ApiService, AuthService, FriendService } from 'service';
@@ -65,18 +81,20 @@ export const Profile = ({ onError, onLogout }) => {
               <span className="profile-header__name">FILES</span>
   					</div>		
   					<div className="profile-header__search">
-              <InputSelect 
-                value={search}
-                onChange={handleSetSearch}
-                placeholder="Search for friends"
-                rightIcon="loupe"
-                Component={AvatarItem}
-                Stub={NoInfo}
-                items={serializeUsers(users.data, onAvatarItemClick)}
-                checked={friendState.data}
-                minLength={MIN_SEARCH_LENGTH}
-                checkedIcon="check"
-              /> 
+              <OutsideClickHandler onOutsideClick={() => handleSetSearch('')}>
+                <InputSelect 
+                  value={search}
+                  onChange={handleSetSearch}
+                  placeholder="Search for friends"
+                  rightIcon="loupe"
+                  Component={AvatarItem}
+                  Stub={NoInfo}
+                  items={serializeUsers(users.data, onAvatarItemClick)}
+                  checked={friendState.data}
+                  minLength={MIN_SEARCH_LENGTH}
+                  checkedIcon="check"
+                /> 
+              </OutsideClickHandler>
   					</div>
             <div className="profile-header__logout">
               <Button onClick={onClickLogout}>Logout</Button>  
@@ -86,12 +104,9 @@ export const Profile = ({ onError, onLogout }) => {
 			</Row>
 			<Row curClass="profile__main">
         <SideMenu>
-          <ul>
-            {Array(100).fill(100).map((item) => (
-              <li>Lorem, ipsum dolor sit, amet consectetur adipisicing elit. Neque ducimus sit reiciendis, officiis sapiente accusantium tempore itaque tenetur eos maiores deleniti eum, illum cumque laudantium, ad iste quam eaque praesentium
-              </li>
-            ))}
-          </ul>
+          {serializeFriends(friends.data).map((item) => (
+            <UserFilesContextMenu {...item} />
+          ))}
         </SideMenu>  
         <Col>
 				  <div className="profile__me me">

@@ -9,3 +9,4 @@ export { default as createPersonFilesList } from './createPersonFilesList';
 export { default as createPersonInfoList } from './createPersonInfoList';
 export { default as getUserAvatar } from './getUserAvatar';
 export { default as serializeUsers } from './serializeUsers';
+export { default as serializeFriends } from './serializeFriends';

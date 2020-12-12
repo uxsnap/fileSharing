@@ -17,6 +17,6 @@ public interface UserRepository extends JpaRepository<User, UUID> {
 
   @Query("SELECT new com.example.fileSharing.dto.UserInfoDto(u.id, u.username, u.avatar) " +
     "FROM User u where u.username like CONCAT('%', ?2, '%') and u.username <> ?1 and u.id not in " +
-    "(select uf.friendId from UserFriend uf)")
+    "(select uf.friendProfile.id from UserFriend uf)")
   List<UserInfoDto> findAllNonFriends(String userName, String search);
 }

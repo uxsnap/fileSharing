@@ -6,6 +6,6 @@ export default (users, click) => {
   	img: getUserAvatar(item), 
   	name: item.userName,
   	icon: 'plus',
-    onClick: click 
+    onIconClick: click 
   })) : [];
 }

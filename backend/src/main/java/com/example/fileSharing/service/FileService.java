@@ -133,9 +133,15 @@ public class FileService {
       UUID.randomUUID().toString(),
       curFileExtension
     );
+    Path folder = Paths.get(AVATAR_FOLDER);
+
+    if (!Files.exists(folder)) {
+      Files.createDirectory(folder);
+    }
+
     String path = AVATAR_FOLDER + curFileName;
     Path curPath = Paths.get(path);
-    user.setAvatar(path);
+    user.setAvatar(path.replace("backend/src", ""));
     try {
       Files.write(curPath, bytes);
       userRepository.save(user);

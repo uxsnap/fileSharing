@@ -21,14 +21,14 @@ public class FriendService {
   private final UserFriendRepository userFriendRepository;
   private final UserRepository userRepository;
 
-  public void addFriend(FriendsDto friendsDto) {
+  public List<UserFriend> addFriend(FriendsDto friendsDto) {
     List<UUID> users = friendsDto.getUsers();
     String currentUser = CurrentLoggedUser.getCurrentUser();
     User user = userRepository.findByUsername(currentUser);
     List<UUID> currentUserFriends = user
       .getUserFriends()
       .stream()
-      .map(UserFriend::getFriendId).collect(Collectors.toList());
+      .map(UserFriend::getId).collect(Collectors.toList());
     List<UserFriend> userFriends = new ArrayList<>();
     for (UUID id: users) {
       if (currentUserFriends.contains(id)) {
@@ -37,12 +37,14 @@ public class FriendService {
       User listUser = userRepository.findById(id).orElse(null);
       if (listUser == null) throw new NullPointerException("Cannot find user with this name");
       userFriends.add(
-        new UserFriend(id, user)
+        new UserFriend(listUser, user)
       );
     }
     for (UserFriend userFriend: userFriends) {
       userFriendRepository.save(userFriend);
     }
+
+    return userFriends;
   }
 
   public List<UserInfoDto> getFriends() {
@@ -50,7 +52,10 @@ public class FriendService {
     User user = userRepository.findByUsername(currentUser);
     return userFriendRepository
       .findAllByUser(user)
-      .stream().map(userFriend -> new UserInfoDto(userFriend.getId(), userFriend.getUser().getUsername()))
+      .stream().map(userFriend -> new UserInfoDto(
+        userFriend.getId(),
+        userFriend.getFriendProfile().getUsername())
+      )
       .collect(Collectors.toList());
   }
 }

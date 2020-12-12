@@ -1,9 +1,7 @@
 package com.example.fileSharing.controller;
 
-import com.example.fileSharing.dto.FriendsDto;
-import com.example.fileSharing.dto.MessageDto;
-import com.example.fileSharing.dto.UserInfoDto;
-import com.example.fileSharing.dto.UserInfoListDto;
+import com.example.fileSharing.dto.*;
+import com.example.fileSharing.entity.UserFriend;
 import com.example.fileSharing.service.FriendService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -12,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @AllArgsConstructor
@@ -20,14 +19,20 @@ public class FriendController {
   private FriendService friendService;
 
   @PostMapping("/add")
-  public ResponseEntity<MessageDto> addFriend(
-          @RequestBody FriendsDto friendsDto
+  public ResponseEntity<FriendsDto> addFriend(
+    @RequestBody FriendsDto users
   ) {
+    FriendsDto friends = new FriendsDto();
     try {
-      friendService.addFriend(friendsDto);
-      return new ResponseEntity<>(new MessageDto("OK"), HttpStatus.OK);
+      List<UserFriend> addedUsers = friendService.addFriend(users);
+      friends.setUsers(addedUsers.stream().map(
+        user -> user.getFriendProfile().getId()).collect(Collectors.toList()));
+      friends.setMessage("OK");
+      return new ResponseEntity<>(friends, HttpStatus.OK);
     } catch (Exception e) {
-      return new ResponseEntity<>(new MessageDto("Cannot add friend"), HttpStatus.INTERNAL_SERVER_ERROR);
+      friends.setUsers(new ArrayList<>());
+      friends.setMessage("Cannot add friend");
+      return new ResponseEntity<>(friends, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 

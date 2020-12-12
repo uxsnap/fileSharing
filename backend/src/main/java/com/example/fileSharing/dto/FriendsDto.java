@@ -1,5 +1,6 @@
 package com.example.fileSharing.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -8,6 +9,7 @@ import java.util.UUID;
 
 @Data
 @NoArgsConstructor
-public class FriendsDto {
+@AllArgsConstructor
+public class FriendsDto extends MessageDto {
   private List<UUID> users;
 }
