@@ -1,4 +1,4 @@
-import { addFriend, getAllFriends } from 'api';
+import { addFriend, getAllFriends, deleteFriend } from 'api';
 import { defaultStatusObject, defaultResponseObject, RES_STATUS } from 'utils';
 
 export default class {
@@ -14,6 +14,23 @@ export default class {
         data: res.data.users,
         status: res.status
       });
+    } catch (error) {
+      cb({
+        ...defaultResponseObject(),
+        status: RES_STATUS.ERROR
+      });
+      this.onError(error)
+    }
+  }
+
+  deleteFriend = async (id, cb, successCb) =>  {
+    cb(defaultResponseObject());
+    try {
+      const res = await deleteFriend(id);
+      cb({
+        status: res.status
+      });
+      res.status === RES_STATUS.OK && successCb();
     } catch (error) {
       cb({
         ...defaultResponseObject(),

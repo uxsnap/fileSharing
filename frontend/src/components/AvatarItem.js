@@ -9,10 +9,14 @@ export default ({ id, img, name, icon, onIconClick, checked }) => (
 		<div className="avatar-item__name">
 			{name}
 		</div>
-		<div className={`avatar-item__icon ${!checked && 'active' }`}>
-			<Icon iconType={!checked ? icon : checked} onClick={(event) => {
-				!checked && onIconClick(id)
-			}}/>
-		</div>
+		{icon && <div className={`avatar-item__icon ${!checked && 'active' }`}>
+				<Icon 
+					iconType={!checked ? icon : checked} 
+					onClick={(event) => {
+						!checked && onIconClick(id)
+					}}
+				/>
+			</div>
+		}
 	</div>
 );

@@ -17,3 +17,7 @@ export const addFriend = (name) => {
 export const getAllFriends = () => {
   return queryExecute('get', '/friend/all');
 };
+
+export const deleteFriend = (friendId) => {
+  return queryExecute('delete', `/friend/delete/${friendId}`);
+};

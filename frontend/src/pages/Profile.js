@@ -32,6 +32,7 @@ export const Profile = ({ onError, onLogout }) => {
   const [fileState, setFileState] = useState(defaultStatusObject());
   const [avatarState, setAvatarState] = useState(defaultStatusObject());
   const [friendState, setFriendState] = useState(defaultStatusObject());
+  const [friendDeleteState, setFriendDeleteState] = useState(defaultStatusObject());
 
 	const [infoList, setUserInfo] = useState(defaultResponseObject());
   const [fileItems, setUserFiles] = useState(defaultResponseObject());
@@ -81,8 +82,14 @@ export const Profile = ({ onError, onLogout }) => {
   const onActive = (active) => setActiveSideMenu(active);
 
   const checkActiveUserFiles = (id) => {
-    console.log(mouseOverId, id);
     return mouseOverId && mouseOverId.includes(id);
+  };
+
+  const handleFriendDelete = async (id) => {
+    console.log(id);
+    await friendService.deleteFriend(id, setFriendDeleteState, () => {
+      friendService.handleGetFriends(setUserFriends);
+    });
   };
 
 	return (
@@ -118,8 +125,16 @@ export const Profile = ({ onError, onLogout }) => {
 			</Row>
 			<Row curClass="profile__main">
         <SideMenu onActive={onActive} >
-          {[...serializeFriends(friends.data), {id: 1231231231322, name: 'Huge fucking name'}].map((item) => (
-            <UserFilesProfile user={item} onMouseEnter={onMouseEnter} active={checkActiveUserFiles(item.id)} />
+          {[...serializeFriends(friends.data, { 
+            active: activeSideMenu,
+            onIconClick: handleFriendDelete 
+          }), {id: 1231231231322, name: 'Huge fucking name'}].map((item) => (
+            <UserFilesProfile 
+              user={item} 
+              onMouseEnter={onMouseEnter} 
+              active={checkActiveUserFiles(item.id)}
+              deleteUser={handleFriendDelete}
+            />
           ))}
         </SideMenu>  
           {mouseOverId && 
