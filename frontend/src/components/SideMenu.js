@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { Icon } from './index';
 
-export default ({ onIconClick, children}) => {
+export default ({ onIconClick, children, onActive }) => {
   const [active, setActive] = useState(false);
 
   const handleOnIconClick = () => {
     setActive(!active);
+    onActive(!active);
     onIconClick && onIconClick();
   };
 

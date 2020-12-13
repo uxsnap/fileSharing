@@ -39,6 +39,7 @@ export const Profile = ({ onError, onLogout }) => {
   const [friends, setUserFriends] = useState(defaultResponseObject());
   const [users, setUsers] = useState(defaultResponseObject());
   const [search, setSearch] = useState("");
+  const [activeSideMenu, setActiveSideMenu] = useState(false);
   const [mouseOverId, setMouseOverId] = useState("");
 
   const fileRef = useRef(null);
@@ -73,12 +74,11 @@ export const Profile = ({ onError, onLogout }) => {
     await friendService.addFriend(name, setFriendState);
   };
 
-  const onMouseEnter = (id) => {
-    setMouseOverId(id);
-  }
-  const onMouseLeave = (e) => {
-    setMouseOverId(null);
-  }
+  const onMouseEnter = (id) => setMouseOverId(id);
+
+  const onMouseLeave = () => setMouseOverId(null);
+
+  const onActive = (active) => setActiveSideMenu(active);
 
   const checkActiveUserFiles = (id) => {
     console.log(mouseOverId, id);
@@ -117,17 +117,19 @@ export const Profile = ({ onError, onLogout }) => {
         </Col>
 			</Row>
 			<Row curClass="profile__main">
-        <SideMenu>
+        <SideMenu onActive={onActive} >
           {[...serializeFriends(friends.data), {id: 1231231231322, name: 'Huge fucking name'}].map((item) => (
             <UserFilesProfile user={item} onMouseEnter={onMouseEnter} active={checkActiveUserFiles(item.id)} />
           ))}
         </SideMenu>  
           {mouseOverId && 
-            <FilesContextMenu 
-            files={new Array(20).fill({ text: 'Test'.repeat(20), icon: 'download' })} 
-            userId={mouseOverId}
-            onMouseLeave={onMouseLeave}
-          />}
+            <FilesContextMenu
+              active={activeSideMenu} 
+              files={new Array(20).fill({ text: 'Test'.repeat(20), icon: 'download' })} 
+              userId={mouseOverId}
+              onMouseLeave={onMouseLeave}
+            />
+          }
         <Col>
 				  <div className="profile__me me">
           	<div>

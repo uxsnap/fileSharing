@@ -1,7 +1,7 @@
 import React, { useRef } from 'react';
 import { IconText } from './index';
 
-export default ({ files, userId, onMouseLeave }) => {
+export default ({ active, files, userId, onMouseLeave }) => {
   const elem = document.querySelector('.' + userId);
   const menu = useRef(null);
   const innerOnMouseLeave = (e) => {
@@ -11,7 +11,7 @@ export default ({ files, userId, onMouseLeave }) => {
   return (
     <div
       ref={menu}
-      className="files-context-menu"
+      className={`files-context-menu ${active ? 'active' : ''}`}
       style={{ top: elem.offsetTop + 'px' }}
       onMouseLeave={innerOnMouseLeave}
     >

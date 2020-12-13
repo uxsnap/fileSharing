@@ -11,12 +11,14 @@
   overflow-y: scroll
   overflow-x: hidden
   text-overflow: ellipsis
-  &:before
-    content: ''
-    position: absolute
-    left: 0
-    height: 100%
-    width: 2px
+  &.active
+    left: 250px
+  &__list
+    .icon-text
+      padding: 8px 0
+      border-top: 1px solid $mainColor
+      &:first-child
+        border-top: 0
   .icon-text
     .irow
       div
