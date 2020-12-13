@@ -5,7 +5,8 @@
 	left: 0
 	top: 0
 	overflow: hidden
-	background: #fff
+	background: #e3e4e9
+	z-index: 1001
 	&.active
 		width: 250px
 		overflow: auto
@@ -20,10 +21,13 @@
 	&__main
 		overflow-y: auto
 		overflow-x: hidden
-		padding: 8px 10px
+		padding: 0 10px 8px 0
 		width: 75px
 		height: calc(100% - 35px);
-		background-color: #fff
+		.user-files
+			.avatar-item
+				&__name
+					display: none
 	&__button
 		font-size: 24px
 		cursor: pointer

@@ -1,0 +1,27 @@
+.files-context-menu
+  position: absolute
+  background: #fff
+  outline: 1px solid $mainColor
+  // border-left: none
+  max-height: 150px
+  width: 350px
+  left: 50px
+  z-index: 1000
+  padding: 0 10px
+  overflow-y: scroll
+  overflow-x: hidden
+  text-overflow: ellipsis
+  &:before
+    content: ''
+    position: absolute
+    left: 0
+    height: 100%
+    width: 2px
+  .icon-text
+    .irow
+      div
+        width: 250px
+        text-overflow: ellipsis
+        overflow: hidden
+      .iicon
+        cursor: pointer

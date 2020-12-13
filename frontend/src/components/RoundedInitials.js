@@ -3,6 +3,6 @@ import { Icon, Avatar } from './index';
 
 export default ({ name }) => (
   <div className="rounded-initials">
-    <span>{name[0].toUpperCase()}</span>
+    <span>{name ? name[0].toUpperCase() : ''}</span>
   </div>
 );

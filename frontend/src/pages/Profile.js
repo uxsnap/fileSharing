@@ -13,7 +13,8 @@ import {
   Avatar,
   NoInfo,
   SideMenu,
-  UserFilesContextMenu
+  UserFilesProfile,
+  FilesContextMenu
 } from 'components';
 import { 
   defaultResponseObject, 
@@ -38,6 +39,7 @@ export const Profile = ({ onError, onLogout }) => {
   const [friends, setUserFriends] = useState(defaultResponseObject());
   const [users, setUsers] = useState(defaultResponseObject());
   const [search, setSearch] = useState("");
+  const [mouseOverId, setMouseOverId] = useState("");
 
   const fileRef = useRef(null);
   const avatarRef = useRef(null);
@@ -59,7 +61,7 @@ export const Profile = ({ onError, onLogout }) => {
 
   const handleSetSearch = async (search) => {
     setSearch(search);
-    await apiService.handleGetUsers(search, setUsers);
+    search.length && await apiService.handleGetUsers(search, setUsers);
   };
 
   const onClickLogout = async () => {
@@ -69,6 +71,18 @@ export const Profile = ({ onError, onLogout }) => {
 
   const onAvatarItemClick = async (name) => {
     await friendService.addFriend(name, setFriendState);
+  };
+
+  const onMouseEnter = (id) => {
+    setMouseOverId(id);
+  }
+  const onMouseLeave = (e) => {
+    setMouseOverId(null);
+  }
+
+  const checkActiveUserFiles = (id) => {
+    console.log(mouseOverId, id);
+    return mouseOverId && mouseOverId.includes(id);
   };
 
 	return (
@@ -104,10 +118,16 @@ export const Profile = ({ onError, onLogout }) => {
 			</Row>
 			<Row curClass="profile__main">
         <SideMenu>
-          {serializeFriends(friends.data).map((item) => (
-            <UserFilesContextMenu {...item} />
+          {[...serializeFriends(friends.data), {id: 1231231231322, name: 'Huge fucking name'}].map((item) => (
+            <UserFilesProfile user={item} onMouseEnter={onMouseEnter} active={checkActiveUserFiles(item.id)} />
           ))}
         </SideMenu>  
+          {mouseOverId && 
+            <FilesContextMenu 
+            files={new Array(20).fill({ text: 'Test'.repeat(20), icon: 'download' })} 
+            userId={mouseOverId}
+            onMouseLeave={onMouseLeave}
+          />}
         <Col>
 				  <div className="profile__me me">
           	<div>

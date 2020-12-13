@@ -1,11 +1,22 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { IconText } from './index';
 
-export default ({ files }) => {
+export default ({ files, userId, onMouseLeave }) => {
+  const elem = document.querySelector('.' + userId);
+  const menu = useRef(null);
+  const innerOnMouseLeave = (e) => {
+    onMouseLeave(e); 
+    e.stopPropagation();
+  }
   return (
-    <div className="files-context-menu">
-      <ul class="files-context-menu__list">
-        {files.map((item) => (
+    <div
+      ref={menu}
+      className="files-context-menu"
+      style={{ top: elem.offsetTop + 'px' }}
+      onMouseLeave={innerOnMouseLeave}
+    >
+      <ul className="files-context-menu__list">
+        {files && files.map((item) => (
           <IconText {...item} />
         ))}
       </ul>

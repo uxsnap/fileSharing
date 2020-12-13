@@ -3,10 +3,10 @@ import { Icon, Row } from './index';
 
 export default ({ icon, text }) => {
   return (
-    <div class="icon-text">
+    <div className="icon-text">
       <Row>
+        <div>{text}</div>
         <Icon iconType={icon} />
-        <span>{text}</span>
       </Row>
     </div>
   )
