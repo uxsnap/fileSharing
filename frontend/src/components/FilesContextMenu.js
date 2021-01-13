@@ -1,7 +1,8 @@
 import React, { useRef } from 'react';
-import { IconText } from './index';
+import { IconText, NoInfo } from './index';
+import { lazyRender } from 'utils';
 
-export default ({ active, files, userId, onMouseLeave }) => {
+export const FilesContextMenu = ({ active, files, userId, onMouseLeave, status, Loader }) => {
   const elem = document.querySelector('.' + userId);
   const menu = useRef(null);
   const innerOnMouseLeave = (e) => {
@@ -15,11 +16,18 @@ export default ({ active, files, userId, onMouseLeave }) => {
       style={{ top: elem.offsetTop + 'px' }}
       onMouseLeave={innerOnMouseLeave}
     >
-      <ul className="files-context-menu__list">
-        {files && files.map((item) => (
-          <IconText {...item} />
-        ))}
-      </ul>
+      {
+        lazyRender(
+          <ul className="files-context-menu__list">
+            { files && files.length ? files.map((item) => (
+              <IconText {...item} />
+            )) : <NoInfo />}
+          </ul>,
+          status
+        )
+      }
     </div>
   )
 };
+
+export default FilesContextMenu;

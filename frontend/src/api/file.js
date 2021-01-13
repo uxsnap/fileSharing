@@ -24,3 +24,4 @@ export const deleteFile = async (fileId) => {
 export const editFile = async (fileId, fileName) => {
 	return queryExecute('patch', `/file/${fileId}`, { fileName });
 };
+

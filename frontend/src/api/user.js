@@ -35,3 +35,4 @@ let getUsersCancel = { cancel: undefined };
 export const getUsers = (userName) => {
 	return queryExecute('get', `/user/all?userName=${userName}`, {}, getUsersCancel);
 };
+

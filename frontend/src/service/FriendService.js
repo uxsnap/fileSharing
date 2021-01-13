@@ -1,4 +1,4 @@
-import { addFriend, getAllFriends, deleteFriend } from 'api';
+import { sendFriendRequest, getAllFriends, deleteFriend } from 'api';
 import { defaultStatusObject, defaultResponseObject, RES_STATUS } from 'utils';
 
 export default class {
@@ -6,10 +6,10 @@ export default class {
     this.onError = onError;
   }
 
-  addFriend = async (name, cb) =>  {
+  sendFriendRequest = async (name, cb) =>  {
     cb(defaultResponseObject());
     try {
-      const res = await addFriend(name);
+      const res = await sendFriendRequest(name);
       cb({
         data: res.data.users,
         status: res.status

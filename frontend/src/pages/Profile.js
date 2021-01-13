@@ -1,9 +1,9 @@
 import OutsideClickHandler from 'react-outside-click-handler';
+import { RES_STATUS } from 'utils';
 import React, { useState, useEffect, useRef } from 'react';
 import { 
   Row, 
   Col, 
-  Input, 
   Icon, 
   IconList,
   FileList,
@@ -14,7 +14,8 @@ import {
   NoInfo,
   SideMenu,
   UserFilesProfile,
-  FilesContextMenu
+  FilesContextMenu,
+  Loader
 } from 'components';
 import { 
   defaultResponseObject, 
@@ -26,13 +27,14 @@ import {
   serializeFriends,
   MIN_SEARCH_LENGTH
 } from 'utils';
-import { ApiService, AuthService, FriendService } from 'service';
+import { ApiService, AuthService, FriendService, FileService } from 'service';
 
 export const Profile = ({ onError, onLogout }) => {
   const [fileState, setFileState] = useState(defaultStatusObject());
   const [avatarState, setAvatarState] = useState(defaultStatusObject());
   const [friendState, setFriendState] = useState(defaultStatusObject());
   const [friendDeleteState, setFriendDeleteState] = useState(defaultStatusObject());
+  const [friendFiles, setFriendFilesState] = useState(defaultResponseObject());
 
 	const [infoList, setUserInfo] = useState(defaultResponseObject());
   const [fileItems, setUserFiles] = useState(defaultResponseObject());
@@ -49,6 +51,7 @@ export const Profile = ({ onError, onLogout }) => {
   const apiService = new ApiService(onError);
   const authService = new AuthService(onError);
   const friendService = new FriendService(onError);
+  const fileService = new FileService(onError);
 
   useEffect(() => {
     apiService.fetchUserData(setUserInfo);
@@ -72,12 +75,18 @@ export const Profile = ({ onError, onLogout }) => {
   };
 
   const onAvatarItemClick = async (name) => {
-    await friendService.addFriend(name, setFriendState);
+    await friendService.sendFriendRequest(name, setFriendState);
   };
 
-  const onMouseEnter = (id) => setMouseOverId(id);
+  const onMouseEnter = (id) => {
+    setMouseOverId(id);
+    fileService.fetchUserFiles(id, setFriendFilesState);
+  };
 
-  const onMouseLeave = () => setMouseOverId(null);
+  const onMouseLeave = () => {
+    setMouseOverId(null);
+    setFriendFilesState(defaultResponseObject());
+  }
 
   const onActive = (active) => setActiveSideMenu(active);
 
@@ -86,11 +95,12 @@ export const Profile = ({ onError, onLogout }) => {
   };
 
   const handleFriendDelete = async (id) => {
-    console.log(id);
     await friendService.deleteFriend(id, setFriendDeleteState, () => {
       friendService.handleGetFriends(setUserFriends);
     });
   };
+
+  console.log()
 
 	return (
 		<div className="profile">
@@ -117,6 +127,9 @@ export const Profile = ({ onError, onLogout }) => {
                 /> 
               </OutsideClickHandler>
   					</div>
+            <div class="profile-header__friendRequests">
+              <Icon iconType="person" />
+            </div>
             <div className="profile-header__logout">
               <Button onClick={onClickLogout}>Logout</Button>  
             </div>		
@@ -125,10 +138,10 @@ export const Profile = ({ onError, onLogout }) => {
 			</Row>
 			<Row curClass="profile__main">
         <SideMenu onActive={onActive} >
-          {[...serializeFriends(friends.data, { 
+          {serializeFriends(friends.data, { 
             active: activeSideMenu,
             onIconClick: handleFriendDelete 
-          }), {id: 1231231231322, name: 'Huge fucking name'}].map((item) => (
+          }).map((item) => (
             <UserFilesProfile 
               user={item} 
               onMouseEnter={onMouseEnter} 
@@ -137,14 +150,16 @@ export const Profile = ({ onError, onLogout }) => {
             />
           ))}
         </SideMenu>  
-          {mouseOverId && 
-            <FilesContextMenu
-              active={activeSideMenu} 
-              files={new Array(20).fill({ text: 'Test'.repeat(20), icon: 'download' })} 
-              userId={mouseOverId}
-              onMouseLeave={onMouseLeave}
-            />
-          }
+        {mouseOverId && 
+          <FilesContextMenu
+            active={activeSideMenu} 
+            files={friendFiles.data}
+            userId={mouseOverId}
+            Loader={Loader}
+            onMouseLeave={onMouseLeave}
+            status={friendFiles.status}
+          />
+        }
         <Col>
 				  <div className="profile__me me">
           	<div>
