@@ -1,5 +1,5 @@
 import React, { useRef } from 'react';
-import { IconText, NoInfo } from './index';
+import { IconTextList } from './index';
 import { lazyRender } from 'utils';
 
 export const FilesContextMenu = ({ active, files, userId, onMouseLeave, status, Loader }) => {
@@ -18,11 +18,7 @@ export const FilesContextMenu = ({ active, files, userId, onMouseLeave, status, 
     >
       {
         lazyRender(
-          <ul className="files-context-menu__list">
-            { files && files.length ? files.map((item) => (
-              <IconText {...item} />
-            )) : <NoInfo />}
-          </ul>,
+          <IconTextList items={files}/>,
           status
         )
       }

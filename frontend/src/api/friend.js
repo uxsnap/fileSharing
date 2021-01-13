@@ -20,6 +20,10 @@ export const getAllFriends = () => {
   return queryExecute('get', '/friend/all');
 };
 
+export const getFriendRequests = () => {
+  return queryExecute('get', '/friend/requests');
+};
+
 export const deleteFriend = (friendId) => {
   return queryExecute('delete', `/friend/delete/${friendId}`);
 };

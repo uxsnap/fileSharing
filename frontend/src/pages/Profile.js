@@ -1,6 +1,7 @@
 import OutsideClickHandler from 'react-outside-click-handler';
 import { RES_STATUS } from 'utils';
 import React, { useState, useEffect, useRef } from 'react';
+import isEqual from 'lodash.isequal';
 import { 
   Row, 
   Col, 
@@ -15,7 +16,8 @@ import {
   SideMenu,
   UserFilesProfile,
   FilesContextMenu,
-  Loader
+  Loader,
+  FriendRequests
 } from 'components';
 import { 
   defaultResponseObject, 
@@ -25,7 +27,8 @@ import {
   getUserAvatar,
   serializeUsers,
   serializeFriends,
-  MIN_SEARCH_LENGTH
+  MIN_SEARCH_LENGTH,
+  serializeUserData
 } from 'utils';
 import { ApiService, AuthService, FriendService, FileService } from 'service';
 
@@ -45,6 +48,8 @@ export const Profile = ({ onError, onLogout }) => {
   const [activeSideMenu, setActiveSideMenu] = useState(false);
   const [mouseOverId, setMouseOverId] = useState("");
 
+  const [friendRequests, setFriendRequests] = useState(defaultResponseObject());
+
   const fileRef = useRef(null);
   const avatarRef = useRef(null);
 
@@ -57,8 +62,21 @@ export const Profile = ({ onError, onLogout }) => {
     apiService.fetchUserData(setUserInfo);
     apiService.fetchUserFiles(setUserFiles);
     apiService.fetchUserAvatar(setUserAvatar);
-    friendService.handleGetFriends(setUserFriends);
+    friendService.getFriends(setUserFriends);
   }, [onError]);
+
+  const stepGetFriendRequests = async (firstStep = false) => {
+    const res = await friendService.getFriendRequests();
+    if (firstStep || !isEqual(res, friendRequests))
+      setFriendRequests(res);
+  };
+
+  useEffect(() => {
+    stepGetFriendRequests(true);
+    setInterval(async () => {
+      stepGetFriendRequests();
+    }, 3000)
+  }, [])
 
   const addNewFile = (ref) => {
     ref.current.click();
@@ -100,8 +118,6 @@ export const Profile = ({ onError, onLogout }) => {
     });
   };
 
-  console.log()
-
 	return (
 		<div className="profile">
 			<Row>
@@ -120,7 +136,7 @@ export const Profile = ({ onError, onLogout }) => {
                   rightIcon="loupe"
                   Component={AvatarItem}
                   Stub={NoInfo}
-                  items={serializeUsers(users.data, onAvatarItemClick)}
+                  items={serializeUserData(users.data, { onIconClick: onAvatarItemClick, icon: 'plus' })}
                   checked={friendState.data}
                   minLength={MIN_SEARCH_LENGTH}
                   checkedIcon="check"
@@ -128,7 +144,7 @@ export const Profile = ({ onError, onLogout }) => {
               </OutsideClickHandler>
   					</div>
             <div class="profile-header__friendRequests">
-              <Icon iconType="person" />
+              <FriendRequests friendList={serializeUserData(friendRequests.data, {})}/>
             </div>
             <div className="profile-header__logout">
               <Button onClick={onClickLogout}>Logout</Button>  
@@ -138,8 +154,10 @@ export const Profile = ({ onError, onLogout }) => {
 			</Row>
 			<Row curClass="profile__main">
         <SideMenu onActive={onActive} >
-          {serializeFriends(friends.data, { 
+          {serializeUserData(friends.data, { 
             active: activeSideMenu,
+            inverseIcon: '',
+            icon: 'close',
             onIconClick: handleFriendDelete 
           }).map((item) => (
             <UserFilesProfile 

@@ -1,4 +1,4 @@
-import { sendFriendRequest, getAllFriends, deleteFriend } from 'api';
+import { sendFriendRequest, getAllFriends, getFriendRequests, deleteFriend } from 'api';
 import { defaultStatusObject, defaultResponseObject, RES_STATUS } from 'utils';
 
 export default class {
@@ -41,7 +41,7 @@ export default class {
   }
 
 
-  handleGetFriends = async (cb) => {
+  getFriends = async (cb) => {
     try {
       const res = await getAllFriends();
       cb({
@@ -56,5 +56,23 @@ export default class {
       });
       this.onError(error);
     }
+  };
+
+
+  getFriendRequests = async () => {
+      try {
+        const res = await getFriendRequests();
+        return {
+        ...defaultResponseObject(),
+          data: res.data.users,
+          status: res.status
+        };
+      } catch (error) {
+        this.onError(error);
+        return {
+          ...defaultResponseObject(),
+          status: RES_STATUS.ERROR
+        };
+      }
   };
 }

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Icon, Row } from './index';
 
-export default ({ icon, text, onClick }) => {
+export const IconText = ({ icon, text, onClick }) => {
   return (
     <div className="icon-text">
       <Row>
@@ -11,3 +11,5 @@ export default ({ icon, text, onClick }) => {
     </div>
   )
 };
+
+export default IconText;

@@ -15,7 +15,6 @@ export default class {
         status: res.status
       });
     } catch (error) {
-      console.log('here');
       cb({
         ...defaultResponseObject(),
         status: RES_STATUS.ERROR

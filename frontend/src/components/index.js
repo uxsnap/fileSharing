@@ -18,3 +18,6 @@ export { default as RoundedInitials } from './RoundedInitials';
 export { default as UserFilesProfile } from './UserFilesProfile';
 export { default as FilesContextMenu } from './FilesContextMenu';
 export { default as IconText } from './IconText';
+export { default as FriendRequests } from './FriendRequests';
+export { default as IconTextList } from './IconTextList';
+export { default as AvatarItemList } from './AvatarItemList';
