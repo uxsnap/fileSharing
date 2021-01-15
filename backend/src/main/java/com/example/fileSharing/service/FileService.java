@@ -1,14 +1,18 @@
 package com.example.fileSharing.service;
 
+import com.example.fileSharing.dto.FileShortInfoDto;
 import com.example.fileSharing.dto.JsonResponse;
 import com.example.fileSharing.entity.File;
 import com.example.fileSharing.entity.FileClient;
 import com.example.fileSharing.entity.User;
+import com.example.fileSharing.entity.UserFriend;
 import com.example.fileSharing.helpers.CurrentLoggedUser;
 import com.example.fileSharing.helpers.PrivilegeEnum;
 import com.example.fileSharing.repository.FileClientRepository;
 import com.example.fileSharing.repository.FileRepository;
+import com.example.fileSharing.repository.UserFriendRepository;
 import com.example.fileSharing.repository.UserRepository;
+import javassist.NotFoundException;
 import lombok.AllArgsConstructor;
 import org.apache.tomcat.util.http.fileupload.FileUtils;
 import org.springframework.boot.web.servlet.server.Session;
@@ -26,6 +30,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static com.example.fileSharing.helpers.ConstantClass.AVATAR_FOLDER;
 import static com.example.fileSharing.helpers.ConstantClass.UPLOADED_FOLDER;
@@ -40,6 +45,26 @@ public class FileService {
   public List<File> getAllUserFiles(String userName) {
     User user = userRepository.findByUsername(userName);
     return fileRepository.findAllByUserId(user.getId());
+  }
+
+  public List<FileShortInfoDto> getFriendFiles(UUID friendId) {
+    String currentUser = CurrentLoggedUser.getCurrentUser();
+    try {
+      User user = userRepository.findByUsername(currentUser);
+      UserFriend userFriend = user.getUserFriends().stream()
+          .filter(u -> u.getId().equals(friendId))
+          .findFirst()
+          .orElseThrow(() -> new NotFoundException("Friend not found"));
+      return userFriend
+        .getUser()
+        .getFiles()
+        .stream().map(file -> new FileShortInfoDto(
+           file.getId(), file.getOriginalName(), file.getLink()
+        )).collect(Collectors.toList());
+    } catch (Exception e) {
+      e.printStackTrace();
+      return new ArrayList<>();
+    }
   }
 
   public void deleteFile(UUID fileId) {

@@ -1,11 +1,11 @@
 import { AvatarItem, NoInfo } from '.';
 import React from 'react';
 
-export const AvatarItemList = ({ items }) => {
+export const AvatarItemList = ({ Component, items }) => {
   return (
-    <ul className="avatar-item-list">
+    <ul className="user-item-list">
       { items && items.length ? items.map((item) => (
-        <AvatarItem {...item} />
+        <Component {...item} />
       )) : <NoInfo />}
     </ul>
   );

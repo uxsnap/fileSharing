@@ -10,6 +10,6 @@ import java.util.UUID;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class FriendsDto extends MessageDto {
+public class UserIdsDto extends MessageDto {
   private List<UUID> users;
 }

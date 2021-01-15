@@ -1,14 +1,8 @@
 import React from 'react';
-import { Icon, Avatar, RoundedInitials } from './index';
+import { UserListItem, Icon } from './index';
 
 export const AvatarItem = ({ id, img, text, icon, onIconClick, checked }) => (
-	<div className="avatar-item">
-		<div className="avatar-item__img">
-			{img ? <Avatar data={img} /> : <RoundedInitials name={text} />}
-		</div>
-		<div className="avatar-item__name">
-			{text}
-		</div>
+	<UserListItem img={img} text={text} className="avatar-item">
 		{icon && <div className={`avatar-item__icon ${!checked && 'active' }`}>
 				<Icon 
 					iconType={!checked ? icon : checked} 
@@ -18,7 +12,7 @@ export const AvatarItem = ({ id, img, text, icon, onIconClick, checked }) => (
 				/>
 			</div>
 		}
-	</div>
+	</UserListItem>
 );
 
 export default AvatarItem;

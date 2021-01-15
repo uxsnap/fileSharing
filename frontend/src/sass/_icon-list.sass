@@ -1,9 +1,17 @@
 .icon-list
-	&__item
-		display: flex
-		align-items: center
-	& .iicon
-		font-size: 24px
-	&__info
-		font-size: 16px
-		padding-left: 10px
+  &__list
+    display: flex
+    align-items: center
+  &__item
+    display: flex
+    align-items: center
+    margin-left: 10px
+    &:first-child
+      margin-left: 0
+    & .iicon
+      font-size: 16px
+      color: $mainColor
+      cursor: pointer
+  &__info
+    font-size: 16px
+    padding-left: 10px

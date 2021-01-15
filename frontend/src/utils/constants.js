@@ -15,3 +15,8 @@ export const RES_STATUS = {
 };
 
 export const MIN_SEARCH_LENGTH = 2;
+
+export const FRIEND_REQUEST_STATUS = {
+  APPROVED: 'approved',
+  DECLINED: 'declined',
+};

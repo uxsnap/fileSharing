@@ -33,9 +33,9 @@ public class FileController {
     try {
       String userName = CurrentLoggedUser.getCurrentUser();
       List<File> files = fileService.getAllUserFiles(userName);
-      return new ResponseEntity<>(new FilesDto(files), HttpStatus.OK);
+      return new ResponseEntity<>(new FilesDto<>(files), HttpStatus.OK);
     } catch (Exception e) {
-      return new ResponseEntity<>(new FilesDto(new ArrayList<>()), HttpStatus.INTERNAL_SERVER_ERROR);
+      return new ResponseEntity<>(new FilesDto<>(new ArrayList<>()), HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 

@@ -2,9 +2,9 @@ import React, { useState } from 'react';
 import { AvatarItem, FilesContextMenu } from './index';
 
 export default ({ user, onMouseEnter, active }) => {
-  const currentUserId = `user-files__user_${user.id}`;
+  const currentUserSelector = `user-files__user_${user.id}`;
   const innerOnMouseEnter = (e) => {
-    onMouseEnter(currentUserId);
+    onMouseEnter(user.id, currentUserSelector);
     e.stopPropagation();
   }
   return (
@@ -12,7 +12,7 @@ export default ({ user, onMouseEnter, active }) => {
       onMouseEnter={innerOnMouseEnter}
       className={`user-files ${active ? 'active' : ''}`}
     >
-      <div className={`user-files__user ${currentUserId}`}>
+      <div className={`user-files__user ${currentUserSelector}`}>
         <AvatarItem {...user} />
       </div>
     </div>

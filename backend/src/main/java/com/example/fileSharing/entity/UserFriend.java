@@ -1,5 +1,6 @@
 package com.example.fileSharing.entity;
 
+import com.example.fileSharing.helpers.FriendRequestStatusEnum;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -30,8 +31,12 @@ public class UserFriend {
   @JoinColumn(name = "user_id", nullable =  false)
   private User user;
 
-  public UserFriend(User friendProfile, User user) {
-    this.friendProfile = friendProfile;
+  @Column(name = "status")
+  private FriendRequestStatusEnum status;
+
+  public UserFriend(User user, User friendProfile, FriendRequestStatusEnum status) {
     this.user = user;
+    this.friendProfile = friendProfile;
+    this.status = status;
   }
 }

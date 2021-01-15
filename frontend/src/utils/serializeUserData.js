@@ -5,7 +5,7 @@ export default (items, options) => {
     id: item.id,
     img: getUserAvatar(item), 
     text: item.userName,
-    icon: options.active ? options.icon : options.inverseIcon,
+    icon: options.icon,
     onIconClick: options.onIconClick
   })) : [];
 }

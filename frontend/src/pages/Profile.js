@@ -17,7 +17,9 @@ import {
   UserFilesProfile,
   FilesContextMenu,
   Loader,
-  FriendRequests
+  UserList,
+  UserRequestItem,
+  UserDataPrep
 } from 'components';
 import { 
   defaultResponseObject, 
@@ -28,7 +30,8 @@ import {
   serializeUsers,
   serializeFriends,
   MIN_SEARCH_LENGTH,
-  serializeUserData
+  serializeUserData,
+  serializeRequestData
 } from 'utils';
 import { ApiService, AuthService, FriendService, FileService } from 'service';
 
@@ -82,22 +85,20 @@ export const Profile = ({ onError, onLogout }) => {
     ref.current.click();
   };
 
-  const handleSetSearch = async (search) => {
+  const handleSetSearch = (search) => {
     setSearch(search);
-    search.length && await apiService.handleGetUsers(search, setUsers);
+    search.length && apiService.handleGetUsers(search, setUsers);
   };
 
-  const onClickLogout = async () => {
-    await authService.handleLogout();
+  const onClickLogout = () => {
+    authService.handleLogout();
     onLogout();
   };
 
-  const onAvatarItemClick = async (name) => {
-    await friendService.sendFriendRequest(name, setFriendState);
-  };
+  const onAvatarItemClick = (name) => friendService.sendFriendRequest(name, setFriendState);
 
-  const onMouseEnter = (id) => {
-    setMouseOverId(id);
+  const onMouseEnter = (id, selector) => {
+    setMouseOverId(selector);
     fileService.fetchUserFiles(id, setFriendFilesState);
   };
 
@@ -112,11 +113,16 @@ export const Profile = ({ onError, onLogout }) => {
     return mouseOverId && mouseOverId.includes(id);
   };
 
-  const handleFriendDelete = async (id) => {
-    await friendService.deleteFriend(id, setFriendDeleteState, () => {
-      friendService.handleGetFriends(setUserFriends);
+  const handleFriendDelete = async (id) => 
+    friendService.deleteFriend(id, setFriendDeleteState, () => {
+      friendService.getFriends(setUserFriends);
     });
-  };
+
+  const handleFriendRequest = (id, status) => friendService.handleFriendRequest(
+    id, 
+    status, 
+    () => friendService.getFriends(setUserFriends)
+  );
 
 	return (
 		<div className="profile">
@@ -144,7 +150,13 @@ export const Profile = ({ onError, onLogout }) => {
               </OutsideClickHandler>
   					</div>
             <div class="profile-header__friendRequests">
-              <FriendRequests friendList={serializeUserData(friendRequests.data, {})}/>
+              <UserList 
+                icon="user-friends" 
+                items={serializeRequestData(friendRequests.data, {
+                  onRequest: handleFriendRequest
+                })}
+                Component={UserRequestItem}
+              />
             </div>
             <div className="profile-header__logout">
               <Button onClick={onClickLogout}>Logout</Button>  
@@ -153,6 +165,8 @@ export const Profile = ({ onError, onLogout }) => {
         </Col>
 			</Row>
 			<Row curClass="profile__main">
+      {
+        friends.data.length ?
         <SideMenu onActive={onActive} >
           {serializeUserData(friends.data, { 
             active: activeSideMenu,
@@ -167,7 +181,8 @@ export const Profile = ({ onError, onLogout }) => {
               deleteUser={handleFriendDelete}
             />
           ))}
-        </SideMenu>  
+        </SideMenu> : ''
+      }
         {mouseOverId && 
           <FilesContextMenu
             active={activeSideMenu} 
