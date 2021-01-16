@@ -2,13 +2,16 @@ import React, { useRef } from 'react';
 import { IconTextList } from './index';
 import { lazyRender } from 'utils';
 
-export const FilesContextMenu = ({ active, files, userId, onMouseLeave, status, Loader }) => {
+export const FilesContextMenu = ({ onLoad, active, files, userId, onMouseLeave, status }) => {
   const elem = document.querySelector('.' + userId);
   const menu = useRef(null);
   const innerOnMouseLeave = (e) => {
     onMouseLeave(e); 
     e.stopPropagation();
   }
+
+  const preparedFiles = files.map((file) => ({ ...file, onClick: () => onLoad(file.id, file.text) }));
+
   return (
     <div
       ref={menu}
@@ -18,7 +21,7 @@ export const FilesContextMenu = ({ active, files, userId, onMouseLeave, status, 
     >
       {
         lazyRender(
-          <IconTextList items={files}/>,
+          <IconTextList items={preparedFiles}/>,
           status
         )
       }

@@ -24,3 +24,4 @@ export { default as IconTextList } from './IconTextList';
 export { default as UserRequestItem } from './UserRequestItem';
 export { default as UserItemList } from './UserItemList';
 export { default as UserDataPrep } from './UserDataPrep';
+export { default as IconFileDownload } from './IconFileDownload';

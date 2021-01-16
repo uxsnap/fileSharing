@@ -1,7 +1,6 @@
 package com.example.fileSharing.entity;
 
 import com.example.fileSharing.helpers.FriendRequestStatusEnum;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

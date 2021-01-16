@@ -9,7 +9,6 @@ import com.example.fileSharing.helpers.FriendRequestStatusEnum;
 import com.example.fileSharing.helpers.Func;
 import com.example.fileSharing.repository.UserFriendRepository;
 import com.example.fileSharing.repository.UserRepository;
-import javassist.NotFoundException;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -58,13 +57,16 @@ public class FriendService {
 
   public void addFriend(UUID potentialFriendId) {
     UUID curUserId = getCurrentUserId();
-    User userFriendProfile = userRepository.findById(curUserId).orElse(null);
-    if (userFriendProfile == null) throw new NullPointerException("Cannot find user");
+    User user = userRepository.findById(curUserId).orElse(null);
+    User friend = userRepository.findById(potentialFriendId).orElse(null);
+    if (user == null || friend == null) throw new NullPointerException("Cannot find user");
 
-    UserFriend userFriend = userFriendProfile.getUserFriends().stream()
-            .filter(uf -> uf.getUser().getId().equals(potentialFriendId) &&
-                    uf.getStatus() == FriendRequestStatusEnum.PENDING)
-            .findFirst().orElse(null);
+    UserFriend userFriend = userFriendRepository
+      .findByUserAndFriendProfileAndStatus(
+        friend,
+        user,
+        FriendRequestStatusEnum.PENDING
+    );
 
     if (userFriend == null) throw new NullPointerException("Cannot find friend");
 
@@ -106,7 +108,7 @@ public class FriendService {
       userFriendRepository
         .findAllByUserAndStatus(user, FriendRequestStatusEnum.ACCEPTED),
         userFriend -> new UserInfoDto(
-          userFriend.getId(),
+          userFriend.getFriendProfile().getId(),
           userFriend.getFriendProfile().getUsername())
     );
   }
@@ -118,7 +120,7 @@ public class FriendService {
       userFriendRepository
         .findAllByFriendProfileAndStatus(user, FriendRequestStatusEnum.PENDING),
       userFriend -> new UserInfoDto(
-        userFriend.getId(),
+        userFriend.getUser().getId(),
         userFriend.getUser().getUsername())
     );
   }

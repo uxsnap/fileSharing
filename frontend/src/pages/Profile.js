@@ -1,5 +1,4 @@
 import OutsideClickHandler from 'react-outside-click-handler';
-import { RES_STATUS } from 'utils';
 import React, { useState, useEffect, useRef } from 'react';
 import isEqual from 'lodash.isequal';
 import { 
@@ -19,16 +18,12 @@ import {
   Loader,
   UserList,
   UserRequestItem,
-  UserDataPrep
 } from 'components';
 import { 
   defaultResponseObject, 
   defaultStatusObject, 
   lazyRender,
-  FILE_STATE, 
   getUserAvatar,
-  serializeUsers,
-  serializeFriends,
   MIN_SEARCH_LENGTH,
   serializeUserData,
   serializeRequestData
@@ -42,7 +37,7 @@ export const Profile = ({ onError, onLogout }) => {
   const [friendDeleteState, setFriendDeleteState] = useState(defaultStatusObject());
   const [friendFiles, setFriendFilesState] = useState(defaultResponseObject());
 
-	const [infoList, setUserInfo] = useState(defaultResponseObject());
+  const [infoList, setUserInfo] = useState(defaultResponseObject());
   const [fileItems, setUserFiles] = useState(defaultResponseObject());
   const [userAvatar, setUserAvatar] = useState(defaultResponseObject());
   const [friends, setUserFriends] = useState(defaultResponseObject());
@@ -90,16 +85,18 @@ export const Profile = ({ onError, onLogout }) => {
     search.length && apiService.handleGetUsers(search, setUsers);
   };
 
-  const onClickLogout = () => {
-    authService.handleLogout();
+  const onClickLogout = async () => {
+    await authService.handleLogout();
     onLogout();
   };
 
   const onAvatarItemClick = (name) => friendService.sendFriendRequest(name, setFriendState);
 
-  const onMouseEnter = (id, selector) => {
+  const onMouseEnter = async (id, selector) => {
+    const res = await fileService.fetchUserFiles(id);
+    setFriendFilesState(res);
+    console.log(res);
     setMouseOverId(selector);
-    fileService.fetchUserFiles(id, setFriendFilesState);
   };
 
   const onMouseLeave = () => {
@@ -123,6 +120,8 @@ export const Profile = ({ onError, onLogout }) => {
     status, 
     () => friendService.getFriends(setUserFriends)
   );
+
+  const onFileLoad = (fileId, fileName) => fileService.downloadFile(fileId, fileName);
 
 	return (
 		<div className="profile">
@@ -149,7 +148,7 @@ export const Profile = ({ onError, onLogout }) => {
                 /> 
               </OutsideClickHandler>
   					</div>
-            <div class="profile-header__friendRequests">
+            <div className="profile-header__friendRequests">
               <UserList 
                 icon="user-friends" 
                 items={serializeRequestData(friendRequests.data, {
@@ -185,6 +184,7 @@ export const Profile = ({ onError, onLogout }) => {
       }
         {mouseOverId && 
           <FilesContextMenu
+            onLoad={onFileLoad}
             active={activeSideMenu} 
             files={friendFiles.data}
             userId={mouseOverId}

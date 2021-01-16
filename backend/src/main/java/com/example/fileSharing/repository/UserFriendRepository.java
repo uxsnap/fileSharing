@@ -19,6 +19,12 @@ public interface UserFriendRepository extends JpaRepository<UserFriend, UUID> {
   )
   void deleteFriend(UUID currentUserId, UUID friendId);
 
-  List<UserFriend> findAllByUserAndStatus(User userId, FriendRequestStatusEnum status);
+  UserFriend findByUserAndStatus(User user, FriendRequestStatusEnum status);
+  UserFriend findByUserAndFriendProfileAndStatus(
+    User user,
+    User friendProfile,
+    FriendRequestStatusEnum status
+  );
+  List<UserFriend> findAllByUserAndStatus(User user, FriendRequestStatusEnum status);
   List<UserFriend> findAllByFriendProfileAndStatus(User friendProfile, FriendRequestStatusEnum status);
 }

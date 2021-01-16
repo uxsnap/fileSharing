@@ -17,11 +17,21 @@ export const uploadFile = async (file) => {
 	});
 };
 
-export const deleteFile = async (fileId) => {
+export const downloadFileById = async (fileId) => {
+	return await queryExecute('get', `/file/${fileId}/download`, {
+		responseType: 'blob',
+		headers: {
+			// 'Authorization': `Bearer ${token}`,
+			'Content-Type': 'multipart/form-data'
+		}
+	});
+};
+
+export const deleteFile = (fileId) => {
 	return queryExecute('delete', `/file/${fileId}`);
 };
 
-export const editFile = async (fileId, fileName) => {
+export const editFile = (fileId, fileName) => {
 	return queryExecute('patch', `/file/${fileId}`, { fileName });
 };
 

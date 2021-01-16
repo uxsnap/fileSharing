@@ -47,16 +47,31 @@ public class FileService {
     return fileRepository.findAllByUserId(user.getId());
   }
 
+  public File getFriendsFileById(UUID fileId) {
+    File requiredFile = null;
+    String currentUser = CurrentLoggedUser.getCurrentUser();
+    List<UserFriend> friends = userRepository.findByUsername(currentUser)
+      .getUserFriends();
+    for (UserFriend friend : friends) {
+      List<File> files = friend.getFriendProfile().getFiles();
+      requiredFile = files.stream().filter(file -> file.getId().equals(fileId)).findFirst().orElse(null);
+      if (requiredFile != null)
+        break;
+    }
+    return requiredFile;
+  }
+
   public List<FileShortInfoDto> getFriendFiles(UUID friendId) {
     String currentUser = CurrentLoggedUser.getCurrentUser();
     try {
       User user = userRepository.findByUsername(currentUser);
-      UserFriend userFriend = user.getUserFriends().stream()
-          .filter(u -> u.getId().equals(friendId))
+      List<UserFriend> userFriends = user.getUserFriends();
+      UserFriend userFriend = userFriends.stream()
+          .filter(u -> u.getFriendProfile().getId().equals(friendId))
           .findFirst()
           .orElseThrow(() -> new NotFoundException("Friend not found"));
       return userFriend
-        .getUser()
+        .getFriendProfile()
         .getFiles()
         .stream().map(file -> new FileShortInfoDto(
            file.getId(), file.getOriginalName(), file.getLink()
@@ -66,6 +81,7 @@ public class FileService {
       return new ArrayList<>();
     }
   }
+
 
   public void deleteFile(UUID fileId) {
     String currentUser = CurrentLoggedUser.getCurrentUser();
