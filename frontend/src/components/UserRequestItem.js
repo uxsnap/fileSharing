@@ -1,7 +1,7 @@
 import React from 'react';
 import { UserListItem, IconList } from './index';
 
-export const UserRequestItem = ({ id, img, text, icons }) => (
+export const UserRequestItem = ({ img, text, icons }) => (
   <UserListItem img={img} text={text} className="user-request-item">
     {icons && 
       <div className="user-request-item__icons">

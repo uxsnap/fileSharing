@@ -1,7 +1,7 @@
 import { AvatarItem, NoInfo } from '.';
 import React from 'react';
 
-export const AvatarItemList = ({ Component, items }) => {
+export const UserItemList = ({ Component, items }) => {
   return (
     <ul className="user-item-list">
       { items && items.length ? items.map((item) => (
@@ -11,4 +11,4 @@ export const AvatarItemList = ({ Component, items }) => {
   );
 };
 
-export default AvatarItemList;
+export default UserItemList;
