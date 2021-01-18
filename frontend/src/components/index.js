@@ -25,3 +25,5 @@ export { default as UserRequestItem } from './UserRequestItem';
 export { default as UserItemList } from './UserItemList';
 export { default as UserDataPrep } from './UserDataPrep';
 export { default as IconFileDownload } from './IconFileDownload';
+export { default as LazyRender } from './LazyRender';
+export { default as FileLoadWrapper } from './FileLoadWrapper';

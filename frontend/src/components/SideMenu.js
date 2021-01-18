@@ -10,8 +10,10 @@ export default ({ onIconClick, children, onActive }) => {
     onIconClick && onIconClick();
   };
 
+  const computedClassName = `side-info ${active ? 'active' : ''} ${children ? '' : 'dnone'}`;
+
   return (
-    <div className={`side-info ${active ? 'active' : ''}`}>
+    <div className={computedClassName}>
       <div className="side-info__main">
         {children}
       </div>

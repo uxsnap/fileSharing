@@ -18,7 +18,7 @@ function App() {
   return (
     <div className="App">
       <ErrorWrapper error={error} onClose={() => setError('')}>
-        {token ? <Profile onError={setError} onLogout={checkPage} /> : <Auth checkPage={checkPage}/>}
+        {token ? <Profile onError={setError} onLogout={checkPage} /> : <Auth onError={setError} checkPage={checkPage}/>}
       </ErrorWrapper>
     </div>
   );

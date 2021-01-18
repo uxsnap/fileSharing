@@ -9,7 +9,6 @@ export const InputSelect = ({
 	items, 
 	Component, 
 	Stub,
-	componentProps,
 	minLength,
 	checked,
 	checkedIcon

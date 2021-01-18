@@ -10,3 +10,4 @@ export { default as createPersonInfoList } from './createPersonInfoList';
 export { default as getUserAvatar } from './getUserAvatar';
 export { default as serializeUserData } from './serializeUserData';
 export { default as serializeRequestData } from './serializeRequestData';
+export { default as useFriendRequest } from './useFriendRequest';

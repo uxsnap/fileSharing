@@ -19,7 +19,7 @@ export default class {
 	      ...defaultResponseObject(),
       	status: RES_STATUS.ERROR
 	    });
-	    this.onError(error);
+	    this.onError(error.response);
   	}
   };
 
@@ -53,7 +53,7 @@ export default class {
 	    successCb();
 	  } catch (error) {
 	    cb(RES_STATUS.ERROR);
-	    this.onError('File upload error');
+	    this.onError(error.response);
 	  }
 	};
 
@@ -72,7 +72,7 @@ export default class {
 	      data: files, 
 	      status: RES_STATUS.ERROR
 	    });
-	     this.onError(error);
+	     this.onError(error.response);
 	  }
 	};
 
@@ -90,7 +90,7 @@ export default class {
 	      data: files, 
 	      status: RES_STATUS.ERROR
 	    });
-      this.onError(error);
+      this.onError(error.response);
 	  }
 	}
 
@@ -104,7 +104,7 @@ export default class {
 	    });
 	  } catch (error) {
 	    cb({ status: RES_STATUS.ERROR });
-	    this.onError(error);
+	    this.onError(error.response);
 	  }
 	}
 
@@ -119,7 +119,7 @@ export default class {
 	    });
 	  } catch (error) {
 	    cb({ status: RES_STATUS.ERROR });
-	    this.onError(error);
+	    this.onError(error.response);
 	  }
 	}
 
@@ -134,7 +134,7 @@ export default class {
 	    });
 	  } catch (error) {
 	    cb({ status: RES_STATUS.ERROR });
-	    this.onError(error);
+	    this.onError(error.response);
 	  }
 	}
 }
