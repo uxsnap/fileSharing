@@ -37,11 +37,7 @@ public class User implements UserDetails {
   @Column(name = "avatar")
   private String avatar;
 
-  @ManyToMany(fetch = FetchType.LAZY)
-  private Collection<Role> roles;
-
   @OneToMany(
-    fetch = FetchType.LAZY,
     mappedBy = "user",
     orphanRemoval = true,
     cascade = CascadeType.PERSIST
@@ -50,9 +46,7 @@ public class User implements UserDetails {
   private List<File> files;
 
   @OneToMany(
-    fetch = FetchType.LAZY,
     mappedBy = "user",
-    orphanRemoval = true,
     cascade = CascadeType.PERSIST
   )
   @Where(clause = "STATUS = 0")

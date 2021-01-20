@@ -15,7 +15,6 @@ export default class {
   fetchUserFiles = async (userId) => {
     try {
       const res = await getFriendFiles(userId);
-      console.log(res);
       if (res.data) {
         res.data = res.data.files
           .map((file) => ({

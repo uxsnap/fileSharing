@@ -6,15 +6,16 @@ import com.example.fileSharing.entity.User;
 import com.example.fileSharing.entity.UserFriend;
 import com.example.fileSharing.helpers.CurrentLoggedUser;
 import com.example.fileSharing.helpers.FriendRequestStatusEnum;
-import com.example.fileSharing.helpers.Func;
 import com.example.fileSharing.repository.UserFriendRepository;
 import com.example.fileSharing.repository.UserRepository;
 import lombok.AllArgsConstructor;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
@@ -32,7 +33,7 @@ public class FriendService {
     List<UUID> users = userIdsDto.getUsers();
     UUID curUserId = getCurrentUserId();
     User user = userRepository.findById(curUserId).orElse(null);
-    if (user == null) throw new NullPointerException("Cannot find user");
+    if (user == null) throw new UsernameNotFoundException("Cannot find user");
     List<UUID> currentUserFriends = user
       .getUserFriends()
       .stream()
@@ -43,7 +44,7 @@ public class FriendService {
         continue;
       }
       User listUser = userRepository.findById(id).orElseThrow(null);
-      if (listUser == null) throw new NullPointerException("Cannot find user with this name");
+      if (listUser == null) throw new UsernameNotFoundException("Cannot find user with this name");
       userFriendRequests.add(
         new UserFriend(user, listUser, FriendRequestStatusEnum.PENDING)
       );
@@ -88,16 +89,18 @@ public class FriendService {
   }
 
   public void deleteFriend(UUID friendId) {
-    userFriendRepository.deleteFriend(getCurrentUserId(), friendId);
+    userFriendRepository
+      .deleteFriend(getCurrentUserId(), friendId);
   }
 
   private List<UserInfoDto> handleFriends(
+
     List<UserFriend> userFriends,
-    Func<UserFriend, UserInfoDto> func
+    Function<UserFriend, UserInfoDto> func
   ) {
     return userFriends
       .stream()
-      .map(func::calculate)
+      .map(func::apply)
       .collect(Collectors.toList());
   }
 

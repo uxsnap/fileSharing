@@ -21,12 +21,12 @@ public class UserFriend {
   @Column(name = "id")
   private UUID id;
 
-  @ManyToOne(fetch = FetchType.LAZY)
+  @ManyToOne
   @JoinColumn(name = "friend_id", nullable = false)
   private User friendProfile;
 
 
-  @ManyToOne(fetch = FetchType.LAZY)
+  @ManyToOne
   @JoinColumn(name = "user_id", nullable =  false)
   private User user;
 

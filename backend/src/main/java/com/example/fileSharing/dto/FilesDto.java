@@ -9,6 +9,6 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class FilesDto<T> {
+public class FilesDto<T> extends MessageDto {
   private List<T> files;
 }

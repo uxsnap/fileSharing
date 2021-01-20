@@ -37,14 +37,14 @@ import java.util.UUID;
 public class FileController {
   private final FileService fileService;
 
-  private final ServletContext servletContext;
-
   @GetMapping
-  public ResponseEntity<Object> getUserFiles() {
+  public ResponseEntity<FilesDto<File>> getUserFiles() {
     try {
-      String userName = CurrentLoggedUser.getCurrentUser();
-      List<File> files = fileService.getAllUserFiles(userName);
-      return new ResponseEntity<>(new FilesDto<>(files), HttpStatus.OK);
+      List<File> files = fileService.getAllUserFiles();
+      FilesDto<File> filesDto = new FilesDto<File>();
+      filesDto.setMessage("OK");
+      filesDto.setFiles(files);
+      return ResponseEntity.ok(filesDto);
     } catch (Exception e) {
       return new ResponseEntity<>(new FilesDto<>(new ArrayList<>()), HttpStatus.INTERNAL_SERVER_ERROR);
     }
@@ -53,7 +53,7 @@ public class FileController {
   @GetMapping("/{fileId}/download")
   public ResponseEntity<Resource> download(
     @PathVariable(name = "fileId") UUID fileId
-  ) throws IOException {
+  ) {
     File file = fileService.getFriendsFileById(fileId);
     if (file == null) throw new NullPointerException("No such file");
     try {
@@ -61,27 +61,32 @@ public class FileController {
       FileChannel fileChannel = FileChannel.open(path);
       long fileSize = fileChannel.size();
       ByteArrayResource resource = new ByteArrayResource(Files.readAllBytes(path));
+      // Needed headers
       return ResponseEntity.ok()
         .header(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=" + file.getOriginalName())
         .contentType(MediaType.APPLICATION_OCTET_STREAM)
-        .contentLength(fileSize) //
+        .contentLength(fileSize)
         .body(resource);
-    } catch (Exception e) {
+    } catch (IOException ioException) {
+      System.err.println("Problem with IO when downloading file");
+      return ResponseEntity.badRequest().body(null);
+    } catch (NullPointerException e) {
       e.printStackTrace();
       return ResponseEntity.badRequest().body(null);
     }
   }
 
   @PostMapping
-  public ResponseEntity<Object> uploadFile(
+  public ResponseEntity<MessageDto> uploadFile(
     @RequestParam(name = "file") MultipartFile file
-  ) throws IOException {
+  ) {
     try {
-      String userName = CurrentLoggedUser.getCurrentUser();
-      fileService.uploadFile(userName, file);
-      return new ResponseEntity<>(new MessageDto("OK"), HttpStatus.OK);
+      fileService.uploadFile(file);
+      return ResponseEntity.ok(new MessageDto("OK"));
     } catch (Exception e) {
-      return new ResponseEntity<>(new MessageDto("Error while fetching uploading file"), HttpStatus.INTERNAL_SERVER_ERROR);
+      return ResponseEntity
+        .badRequest()
+        .body(new MessageDto("Error while fetching uploading file"));
     }
   }
 
@@ -92,9 +97,10 @@ public class FileController {
   ) {
     try {
       fileService.editFile(fileId, fileName.getFileName());
-      return new ResponseEntity<>(new MessageDto("OK"), HttpStatus.OK);
+      return ResponseEntity.ok(new MessageDto("OK"));
     } catch (Exception e) {
-      return new ResponseEntity<>(new MessageDto("Problem with editing the file"), HttpStatus.INTERNAL_SERVER_ERROR);
+      return ResponseEntity.badRequest()
+        .body(new MessageDto("Problem with editing the file"));
     }
   }
 
@@ -104,9 +110,10 @@ public class FileController {
   ) {
     try {
       fileService.deleteFile(fileId);
-      return new ResponseEntity<>(new MessageDto("OK"), HttpStatus.OK);
+      return ResponseEntity.ok(new MessageDto("OK"));
     } catch (Exception e) {
-      return new ResponseEntity<>(new MessageDto("Problem with deleting the file"), HttpStatus.INTERNAL_SERVER_ERROR);
+      return ResponseEntity.badRequest()
+        .body(new MessageDto("Problem with deleting the file"));
     }
   }
 }

@@ -22,7 +22,6 @@ import java.util.List;
 @AllArgsConstructor
 @RequestMapping("/user")
 public class UserController {
-  private final FriendService friendService;
   private final UserService userService;
   private final FileService fileService;
 
@@ -36,23 +35,29 @@ public class UserController {
       List<UserInfoDto> users = userService.getUsers(userName);
       usersDto.setUsers(users);
       usersDto.setMessage("OK");
-      return new ResponseEntity<>(usersDto, HttpStatus.OK);
+      return ResponseEntity.ok(usersDto);
     } catch (Exception e) {
       usersDto.setMessage("Error while fetching users");
-      return new ResponseEntity<>(usersDto, HttpStatus.INTERNAL_SERVER_ERROR);
+      return ResponseEntity.badRequest().body(usersDto);
     }
   }
 
   @GetMapping
-  public ResponseEntity<Object> getUser() {
+  public ResponseEntity<UserInfoDto> getUser() {
+    UserInfoDto userInfoDto = new UserInfoDto();
     try {
       String userName = CurrentLoggedUser.getCurrentUser();
       UserDetails user = userService.loadUserByUsername(userName);
-      if (user != null)
-        return new ResponseEntity<>(new UserInfoDto(userName), HttpStatus.OK);
-      return new ResponseEntity<>(new MessageDto("No user with provided name"), HttpStatus.NOT_FOUND);
+      userInfoDto.setUserName(userName);
+      if (user != null) {
+        userInfoDto.setMessage("OK");
+        return ResponseEntity.ok(userInfoDto);
+      }
+      userInfoDto.setMessage("No user with provided name");
+      return ResponseEntity.badRequest().body(userInfoDto);
     } catch (Exception e) {
-      return new ResponseEntity<>(new MessageDto("Error while fetching user data"), HttpStatus.INTERNAL_SERVER_ERROR);
+      userInfoDto.setMessage("Error while fetching user data");
+      return ResponseEntity.badRequest().body(userInfoDto);
     }
   }
 
@@ -65,12 +70,12 @@ public class UserController {
       AvatarDto avatarDto = new AvatarDto();
       avatarDto.setAvatar(avatar);
       avatarDto.setMessage("OK");
-      return new ResponseEntity<>(avatarDto, HttpStatus.OK);
+      return ResponseEntity.ok(avatarDto);
     } catch (Exception e) {
       AvatarDto avatarDto = new AvatarDto();
       avatarDto.setMessage("Problem with fetching avatar");
       avatarDto.setAvatar(null);
-      return new ResponseEntity<>(avatarDto, HttpStatus.INTERNAL_SERVER_ERROR);
+      return ResponseEntity.badRequest().body(avatarDto);
     }
   }
 
@@ -79,11 +84,12 @@ public class UserController {
     @RequestParam(name = "avatar") MultipartFile avatar
   ) {
     try {
-      String userName = CurrentLoggedUser.getCurrentUser();
-      fileService.uploadAvatar(userName, avatar);
-      return new ResponseEntity<>(new MessageDto("OK"), HttpStatus.OK);
+      fileService.uploadAvatar(avatar);
+      return ResponseEntity.ok(new MessageDto("OK"));
     } catch (Exception e) {
-      return new ResponseEntity<>(new MessageDto("Problem with uploading the avatar"), HttpStatus.INTERNAL_SERVER_ERROR);
+      return ResponseEntity.badRequest().body(
+        new MessageDto("Problem with uploading the avatar")
+      );
     }
   }
 }

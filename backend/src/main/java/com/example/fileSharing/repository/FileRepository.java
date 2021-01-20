@@ -13,7 +13,6 @@ import java.util.UUID;
 @Repository
 public interface FileRepository extends JpaRepository<File, UUID> {
   List<File> findAllByUserId(UUID userId);
-
   @Transactional
   @Modifying
   @Query("delete from File where id = ?1")

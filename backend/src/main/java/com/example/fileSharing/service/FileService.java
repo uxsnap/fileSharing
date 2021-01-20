@@ -1,31 +1,22 @@
 package com.example.fileSharing.service;
 
 import com.example.fileSharing.dto.FileShortInfoDto;
-import com.example.fileSharing.dto.JsonResponse;
 import com.example.fileSharing.entity.File;
 import com.example.fileSharing.entity.FileClient;
 import com.example.fileSharing.entity.User;
 import com.example.fileSharing.entity.UserFriend;
 import com.example.fileSharing.helpers.CurrentLoggedUser;
-import com.example.fileSharing.helpers.PrivilegeEnum;
 import com.example.fileSharing.repository.FileClientRepository;
 import com.example.fileSharing.repository.FileRepository;
-import com.example.fileSharing.repository.UserFriendRepository;
 import com.example.fileSharing.repository.UserRepository;
 import javassist.NotFoundException;
 import lombok.AllArgsConstructor;
-import org.apache.tomcat.util.http.fileupload.FileUtils;
-import org.springframework.boot.web.servlet.server.Session;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.file.FileSystem;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -33,17 +24,19 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.example.fileSharing.helpers.ConstantClass.AVATAR_FOLDER;
-import static com.example.fileSharing.helpers.ConstantClass.UPLOADED_FOLDER;
 
 @Service
 @AllArgsConstructor
 public class FileService {
+  private final static String UPLOADED_FOLDER = "backend/src/files/";
+
   private final UserRepository userRepository;
   private final FileRepository fileRepository;
   private final FileClientRepository fileClientRepository;
 
-  public List<File> getAllUserFiles(String userName) {
-    User user = userRepository.findByUsername(userName);
+  public List<File> getAllUserFiles() {
+    String currentUser = CurrentLoggedUser.getCurrentUser();
+    User user = userRepository.findByUsername(currentUser);
     return fileRepository.findAllByUserId(user.getId());
   }
 
@@ -94,11 +87,6 @@ public class FileService {
         .orElse(null);
       if (file == null) throw new NullPointerException("No needed file");
       UUID curFileId = file.getId();
-      FileClient fileClient = fileClientRepository.findByFile_IdAndPrivilege(
-        curFileId,
-        PrivilegeEnum.DELETE.getPrivilege()
-      );
-      if (fileClient == null) throw new NullPointerException("No such privilege");
       fileClientRepository.deleteByFileId(curFileId);
       fileRepository.deleteFileById(curFileId);
       Files.delete(Paths.get(file.getLink()));
@@ -108,11 +96,12 @@ public class FileService {
   }
 
 //  Work out needed exceptions
-  public void uploadFile(String userName, MultipartFile file) throws Exception {
+  public void uploadFile(MultipartFile file) throws Exception {
+    String userName = CurrentLoggedUser.getCurrentUser();
     byte[] bytes = file.getBytes();
     String curFileExtension =
-      file
-        .getOriginalFilename()
+      Objects.requireNonNull(file
+        .getOriginalFilename())
         .split("\\.")[1];
     String curFileName = String.format(
       "%s.%s",
@@ -136,33 +125,22 @@ public class FileService {
     fileEntity.setOriginalName(file.getOriginalFilename());
 
     fileRepository.save(fileEntity);
-
-    List<PrivilegeEnum> privilegeEnums = Arrays.asList(
-      PrivilegeEnum.LOAD, PrivilegeEnum.DELETE, PrivilegeEnum.RENAME
-    );
-    for (PrivilegeEnum privilegeEnum: privilegeEnums) {
-      fileClientRepository.save(new FileClient(
-        user.getUsername(),
-        privilegeEnum.getPrivilege(),
-        fileEntity
-      ));
-    }
+    fileClientRepository.save(new FileClient(user.getUsername(), fileEntity));
   }
 
   public void editFile(UUID fileId, String fileName) {
     fileRepository.editFileName(fileId, fileName);
   }
 
-  public void uploadAvatar(String userName, MultipartFile avatar) throws Exception {
+  public void uploadAvatar(MultipartFile avatar) throws Exception {
     String currentUser = CurrentLoggedUser.getCurrentUser();
-    if (!currentUser.equals(userName)) throw new UsernameNotFoundException("Wrong user");
     byte[] bytes = avatar.getBytes();
     String curFileExtension =
       Objects.requireNonNull(avatar
         .getOriginalFilename())
         .split("\\.")[1];
-    if (!curFileExtension.matches("png|jpe?g")) throw new Exception("Wrong exception");
-    User user = userRepository.findByUsername(userName);
+    if (!curFileExtension.matches("png|jpe?g")) throw new Exception("Wrong file format");
+    User user = userRepository.findByUsername(currentUser);
     if (user == null) throw new UsernameNotFoundException("User cannot be found");
     String prevAvatar = user.getAvatar();
     if (prevAvatar != null) {

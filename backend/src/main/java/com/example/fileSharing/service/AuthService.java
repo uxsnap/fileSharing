@@ -1,10 +1,9 @@
 package com.example.fileSharing.service;
 
 import com.example.fileSharing.dto.*;
-import com.example.fileSharing.entity.Role;
 import com.example.fileSharing.entity.User;
 import com.example.fileSharing.helpers.ConstantClass;
-import com.example.fileSharing.repository.RoleRepository;
+import com.example.fileSharing.helpers.UserAlreadyExistAuthenticationException;
 import com.example.fileSharing.repository.UserRepository;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
@@ -14,14 +13,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 import java.time.LocalDate;
 import java.util.*;
 
@@ -30,11 +26,11 @@ import java.util.*;
 @AllArgsConstructor
 public class AuthService {
   private final UserRepository userRepository;
-  private final RoleRepository roleRepository;
   private final PasswordEncoder passwordEncoder;
   private final AuthenticationManager authenticationManager;
 
-  public ResponseEntity<Object> loginUser(UserAndPassAuthDto userDto) {
+  public JwtResponse loginUser(UserAndPassAuthDto userDto) {
+    JwtResponse jwtResponse = new JwtResponse();
     try {
       String username = userDto.getUserName();
 
@@ -42,7 +38,6 @@ public class AuthService {
         username,
         userDto.getPassword()
       );
-
       authenticationManager.authenticate(authentication);
 
       String token = Jwts.builder()
@@ -53,37 +48,31 @@ public class AuthService {
         .signWith(Keys.hmacShaKeyFor(ConstantClass.SECRET_KEY.getBytes()))
         .compact();
 
-      return new ResponseEntity<>(new JwtResponse(token, username), HttpStatus.OK);
+      jwtResponse.setToken(token);
+      jwtResponse.setMessage("OK");
+      jwtResponse.setUsername(username);
+      return jwtResponse;
     } catch (Exception e) {
-      return new ResponseEntity<>(new MessageDto("Cannot login!"), HttpStatus.BAD_REQUEST);
+      jwtResponse.setMessage("Cannot login!");
+      return jwtResponse;
     }
   }
 
-  public ResponseEntity<MessageDto> registerNewUserAccount(UserAndPassAuthDto accountDto)  {
-    JsonResponse response = new JsonResponse();
+  public void registerNewUserAccount(UserAndPassAuthDto accountDto)  {
     User found = userRepository.findByUsername(accountDto.getUserName());
     if (found != null) {
-      return new ResponseEntity<>(new MessageDto("User already created"), HttpStatus.BAD_REQUEST);
-//      return response;
+      throw new UserAlreadyExistAuthenticationException("User already created!");
     }
     try {
       User user = new User();
       user.setUsername(accountDto.getUserName());
       user.setPassword(passwordEncoder.encode(accountDto.getPassword()));
-      Role curRole = roleRepository.findByName("USER");
-      user.setRoles(
-        Arrays.asList(curRole)
-      );
       userRepository.save(user);
-      response.setMessage("Saved");
-      return new ResponseEntity<MessageDto>(HttpStatus.OK);
     } catch (Exception e) {
-      response.setMessage("Cannot save user");
-      return new ResponseEntity<MessageDto>(HttpStatus.BAD_GATEWAY);
+      e.printStackTrace();
     }
   }
 
-  public ResponseEntity<MessageDto> logoutUser() {
-    return new ResponseEntity<>(new MessageDto("OK"), HttpStatus.OK);
+  public void logoutUser() {
   }
 }

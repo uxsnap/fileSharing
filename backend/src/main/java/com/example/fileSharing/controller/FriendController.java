@@ -2,13 +2,16 @@ package com.example.fileSharing.controller;
 
 import com.example.fileSharing.dto.*;
 import com.example.fileSharing.entity.UserFriend;
+import com.example.fileSharing.helpers.ErrorMessageUnwrapper;
 import com.example.fileSharing.service.FileService;
 import com.example.fileSharing.service.FriendService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -23,31 +26,41 @@ public class FriendController {
 
   @PostMapping("/sendRequest")
   public ResponseEntity<UserIdsDto> sendFriendRequests(
-    @RequestBody UserIdsDto users
+    @Valid  @RequestBody UserIdsDto users,
+    Errors errors
   ) {
+    if (errors.hasErrors()) {
+      UserIdsDto userIdsDto = new UserIdsDto();
+      userIdsDto.setErrors(ErrorMessageUnwrapper.errors(errors));
+      return ResponseEntity.badRequest().body(userIdsDto);
+    }
     UserIdsDto friends = new UserIdsDto();
     try {
       List<UserFriend> addedUsers = friendService.sendFriendRequests(users);
       friends.setUsers(addedUsers.stream().map(
         user -> user.getFriendProfile().getId()).collect(Collectors.toList()));
       friends.setMessage("OK");
-      return new ResponseEntity<>(friends, HttpStatus.OK);
+      return ResponseEntity.ok(friends);
     } catch (Exception e) {
       friends.setUsers(new ArrayList<>());
-      friends.setMessage("Cannot add friend");
-      return new ResponseEntity<>(friends, HttpStatus.INTERNAL_SERVER_ERROR);
+      friends.setMessage("Cannot add a friend");
+      return ResponseEntity.badRequest().body(friends);
     }
   }
 
   @GetMapping("/{potentialFriendId}/decline")
-  public ResponseEntity<UUID> declineFriendRequests(
+  public ResponseEntity<UserIdDto> declineFriendRequests(
     @PathVariable(name = "potentialFriendId") UUID potentialFriendId
   ) {
+    UserIdDto userIdDto = new UserIdDto();
     try {
       friendService.declineFriendRequest(potentialFriendId);
-      return ResponseEntity.ok(potentialFriendId);
+      userIdDto.setMessage("OK");
+      userIdDto.setId(potentialFriendId);
+      return ResponseEntity.ok(userIdDto);
     } catch (Exception e) {
-      return new ResponseEntity<>(potentialFriendId, HttpStatus.INTERNAL_SERVER_ERROR);
+      userIdDto.setMessage("Cannot decline friend request");
+      return ResponseEntity.badRequest().body(userIdDto);
     }
   }
 
@@ -62,7 +75,7 @@ public class FriendController {
       return ResponseEntity.ok(messageDto);
     } catch (Exception e) {
       messageDto.setMessage("Error while accepting friend request");
-      return new ResponseEntity<>(messageDto, HttpStatus.INTERNAL_SERVER_ERROR);
+      return ResponseEntity.badRequest().body(messageDto);
     }
   }
 
@@ -72,9 +85,9 @@ public class FriendController {
   ) {
     try {
       friendService.deleteFriend(friendId);
-      return new ResponseEntity<>(new MessageDto("OK"), HttpStatus.OK);
+      return ResponseEntity.ok(new MessageDto("OK"));
     } catch (Exception e) {
-      return new ResponseEntity<>(new MessageDto("Cannot delete this users"), HttpStatus.INTERNAL_SERVER_ERROR);
+      return ResponseEntity.badRequest().body(new MessageDto("Cannot delete this user"));
     }
   }
 
@@ -85,13 +98,12 @@ public class FriendController {
       List<UserInfoDto> users = friendService.getFriends();
       userInfoListDto.setUsers(users);
       userInfoListDto.setMessage("OK");
-      return new ResponseEntity<>(userInfoListDto, HttpStatus.OK);
+      return ResponseEntity.ok(userInfoListDto);
     } catch (Exception e) {
       userInfoListDto.setUsers(new ArrayList<>());
       userInfoListDto.setMessage("Cannot obtain user friends");
-      return new ResponseEntity<>(
-              userInfoListDto,
-              HttpStatus.INTERNAL_SERVER_ERROR
+      return ResponseEntity.badRequest().body(
+        userInfoListDto
       );
     }
   }
@@ -103,13 +115,12 @@ public class FriendController {
       List<UserInfoDto> users = friendService.getPotentialFriends();
       userInfoListDto.setUsers(users);
       userInfoListDto.setMessage("OK");
-      return new ResponseEntity<>(userInfoListDto, HttpStatus.OK);
+      return ResponseEntity.ok(userInfoListDto);
     } catch (Exception e) {
       userInfoListDto.setUsers(new ArrayList<>());
       userInfoListDto.setMessage("Cannot obtain friend request users");
-      return new ResponseEntity<>(
-              userInfoListDto,
-              HttpStatus.INTERNAL_SERVER_ERROR
+      return ResponseEntity.badRequest().body(
+        userInfoListDto
       );
     }
   }
@@ -121,11 +132,12 @@ public class FriendController {
     FilesDto<FileShortInfoDto> friendsFiles = new FilesDto<>();
     try {
       friendsFiles.setFiles(fileService.getFriendFiles(friendId));
+      friendsFiles.setMessage("OK");
       return ResponseEntity.ok(friendsFiles);
     } catch (Exception e) {
-      return new ResponseEntity<>(
-          friendsFiles,
-          HttpStatus.INTERNAL_SERVER_ERROR
+      friendsFiles.setMessage("Cannot obtain friend files");
+      return ResponseEntity.badRequest().body(
+        friendsFiles
       );
     }
   }

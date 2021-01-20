@@ -1,15 +1,13 @@
 package com.example.fileSharing.entity;
 
-import com.example.fileSharing.helpers.PrivilegeEnum;
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
-import java.security.Permission;
 import java.util.UUID;
 
 @Entity
@@ -27,16 +25,12 @@ public class FileClient {
   @Column(name = "username")
   private String userName;
 
-  @Column(name = "privilege")
-  private String privilege;
-
-  public FileClient(String userName, String privilege, File file) {
+  public FileClient(String userName, File file) {
     this.userName = userName;
-    this.privilege = privilege;
     this.file = file;
   }
 
-  @ManyToOne(fetch = FetchType.LAZY)
+  @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
   @JoinColumn(name = "file_id", nullable = false)
   @JsonBackReference
   private File file;

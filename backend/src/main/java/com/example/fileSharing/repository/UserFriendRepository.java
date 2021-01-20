@@ -15,11 +15,12 @@ public interface UserFriendRepository extends JpaRepository<UserFriend, UUID> {
   @Transactional
   @Modifying
   @Query(
-    "delete from UserFriend uf where uf.user.id = ?1 and uf.id = ?2"
+    "delete from UserFriend uf " +
+    "where (uf.user.id = ?1 and uf.friendProfile.id = ?2) " +
+    "or (uf.user.id = ?2 and uf.friendProfile.id = ?1)"
   )
   void deleteFriend(UUID currentUserId, UUID friendId);
 
-  UserFriend findByUserAndStatus(User user, FriendRequestStatusEnum status);
   UserFriend findByUserAndFriendProfileAndStatus(
     User user,
     User friendProfile,

@@ -24,7 +24,7 @@ public class File {
   @Column(name = "id")
   private UUID id;
 
-  @Column(name = "name")
+  @Column(name = "name", unique = true)
   private String name;
 
   @Column(name = "size")
@@ -37,7 +37,6 @@ public class File {
   private String originalName;
 
   @OneToMany(
-    fetch = FetchType.LAZY,
     mappedBy = "file",
     orphanRemoval = true,
     cascade = CascadeType.ALL

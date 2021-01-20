@@ -26,25 +26,25 @@ export default class {
         ...defaultResponseObject(),
         status: RES_STATUS.ERROR
       });
-      this.onError(error)
+      this.onError(error.response.data);
     }
   }
 
   deleteFriend = async (id, cb, successCb) =>  {
     cb(defaultResponseObject());
-    try {
-      const res = await deleteFriend(id);
+    const res = await deleteFriend(id);
+    if (res.status === RES_STATUS.OK) {
       cb({
         status: res.status
       });
-      res.status === RES_STATUS.OK && successCb();
-    } catch (error) {
-      cb({
-        ...defaultResponseObject(),
-        status: RES_STATUS.ERROR
-      });
-      this.onError(error)
+      successCb();
+      return;
     }
+    cb({
+      ...defaultResponseObject(),
+      status: RES_STATUS.ERROR
+    });
+    this.onError(res.data);
   }
 
 
@@ -61,7 +61,7 @@ export default class {
         ...defaultResponseObject(),
         status: RES_STATUS.ERROR
       });
-      this.onError(error);
+      this.onError(error.response.data);
     }
   };
 
@@ -75,7 +75,7 @@ export default class {
         status: res.status
       };
     } catch (error) {
-      this.onError(error);
+      this.onError(error.response.data);
       return {
         ...defaultResponseObject(),
         status: RES_STATUS.ERROR
@@ -98,7 +98,7 @@ export default class {
       const res = await neededCbFunc(id);
       res.status === RES_STATUS.OK && cb();
     } catch (error) {
-      this.onError(error)
+      this.onError(error.response.data);
     }
   };
 }
