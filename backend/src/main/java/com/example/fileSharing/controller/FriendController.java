@@ -25,24 +25,23 @@ public class FriendController {
   private final FileService fileService;
 
   @PostMapping("/sendRequest")
-  public ResponseEntity<UserIdsDto> sendFriendRequests(
+  public ResponseEntity<ListDataDto<UUID>> sendFriendRequests(
     @Valid  @RequestBody UserIdsDto users,
     Errors errors
   ) {
     if (errors.hasErrors()) {
-      UserIdsDto userIdsDto = new UserIdsDto();
-      userIdsDto.setErrors(ErrorMessageUnwrapper.errors(errors));
-      return ResponseEntity.badRequest().body(userIdsDto);
+      ListDataDto<UUID> listDataDto = new ListDataDto<>();
+      listDataDto.setErrors(ErrorMessageUnwrapper.errors(errors));
+      return ResponseEntity.badRequest().body(listDataDto);
     }
-    UserIdsDto friends = new UserIdsDto();
+    ListDataDto<UUID> friends = new ListDataDto<>();
     try {
       List<UserFriend> addedUsers = friendService.sendFriendRequests(users);
-      friends.setUsers(addedUsers.stream().map(
+      friends.setData(addedUsers.stream().map(
         user -> user.getFriendProfile().getId()).collect(Collectors.toList()));
       friends.setMessage("OK");
       return ResponseEntity.ok(friends);
     } catch (Exception e) {
-      friends.setUsers(new ArrayList<>());
       friends.setMessage("Cannot add a friend");
       return ResponseEntity.badRequest().body(friends);
     }

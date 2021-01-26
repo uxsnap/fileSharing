@@ -19,7 +19,6 @@ import {
   UserList,
   UserRequestItem,
   LazyRender,
-  FileLoadWrapper
 } from 'components';
 import {
   defaultResponseObject,
@@ -27,9 +26,9 @@ import {
   getUserAvatar,
   MIN_SEARCH_LENGTH,
   serializeUserData,
-  serializeRequestData
+  serializeRequestData, RES_STATUS
 } from 'utils';
-import { ApiService, AuthService, FriendService, FileService } from 'service';
+import { UserService, AuthService, FriendService, FileService } from 'service';
 
 export const Profile = ({ onError, onLogout }) => {
   const [fileState, setFileState] = useState(defaultStatusObject());
@@ -54,16 +53,20 @@ export const Profile = ({ onError, onLogout }) => {
   const fileRef = useRef(null);
   const avatarRef = useRef(null);
 
-  const apiService = new ApiService(onError);
+  const userService = new UserService(onError);
   const authService = new AuthService(onError);
   const friendService = new FriendService(onError);
   const fileService = new FileService(onError);
 
   useEffect(() => {
-    apiService.fetchUserData(setUserInfo);
-    apiService.fetchUserFiles(setUserFiles);
-    apiService.fetchUserAvatar(setUserAvatar);
-    friendService.getFriends(setUserFriends);
+    userService.fetchUserData()
+      .then(setUserInfo);
+    userService.fetchUserFiles()
+      .then(setUserFiles);
+    userService.fetchUserAvatar()
+      .then(setUserAvatar);
+    friendService.getFriends()
+      .then(setUserFriends);
   }, [onError]);
 
   const stepGetFriendRequests = async (firstStep = false) => {
@@ -84,7 +87,9 @@ export const Profile = ({ onError, onLogout }) => {
 
   const handleSetSearch = (search) => {
     setSearch(search);
-    search.length && apiService.handleGetUsers(search, setUsers);
+    search.length && userService.handleGetUsers(search).then((res) => {
+      setUsers(res.data);
+    });
   };
 
   const onClickLogout = async () => authService
@@ -94,7 +99,12 @@ export const Profile = ({ onError, onLogout }) => {
       onLogout();
     });
 
-  const onAvatarItemClick = (name) => friendService.sendFriendRequest(name, setFriendState);
+  const onAvatarItemClick = (name) => {
+    setFriendState(defaultResponseObject());
+    friendService.sendFriendRequest(name).then((res) => {
+      setFriendState(res.data);
+    });
+  }
 
   const onMouseEnter = async (id, selector) => {
     const res = await fileService.fetchUserFiles(id);
@@ -110,15 +120,54 @@ export const Profile = ({ onError, onLogout }) => {
     mouseOverId && mouseOverId.includes(id);
 
   const handleFriendDelete = (id) =>
-    friendService.deleteFriend(id, setFriendDeleteState, () => {
-      friendService.getFriends(setUserFriends);
+    friendService.deleteFriend(id)
+      .then((statusData) => {
+        setFriendDeleteState(statusData);
+        return friendService.getFriends();
+      })
+      .then((friendData) => {
+        setUserFriends(friendData);
+      });
+
+  const handleFriendRequest = (id, status) => friendService.handleFriendRequest(id, status)
+      .then(() => friendService.getFriends(setUserFriends));
+
+  const handleAvatarUpload = (event) => {
+    if (!event.target.files.length) {
+      return setAvatarState({ ...avatarState, status: RES_STATUS.OK });
+    }
+    const file = event.target.files[0];
+    return userService.handleNewAvatar(file)
+      .then((res) => {
+        setAvatarState(res.data);
+        userService.fetchUserAvatar(setUserAvatar);
+      })
+  }
+
+  const handleFileUpload = (event) => {
+    if (!event.target.files.length) {
+      return setFileState({ ...fileState, status: RES_STATUS.OK });
+    }
+    const file = event.target.files[0];
+    return fileService.handleFileUpload(file)
+      .then((res) => {
+        setFileState(res.data);
+        return userService.fetchUserFiles()
+      })
+      .then(setUserFiles);
+  };
+
+  const handleDeleteFile = (id) =>
+    fileService.handleDeleteFile(id, fileItems).then((res) => {
+      setUserFiles({ ...fileItems,
+        data: fileItems.data.filter((file) => file.id !== id) });
     });
 
-  const handleFriendRequest = (id, status) => friendService.handleFriendRequest(
-    id, 
-    status, 
-    () => friendService.getFriends(setUserFriends)
-  );
+  const handleEditFile = (id, fileName) =>
+    fileService.handleEditFile(id, fileName, fileItems).then((res) => {
+      setUserFiles({ ...fileItems,
+        data: fileItems.data.filter((file) => file.id === id ? {...file, name: fileName } : file) });
+    })
 
   const onFileLoad = (fileId, fileName) => fileService.downloadFile(fileId, fileName);
 
@@ -189,13 +238,8 @@ export const Profile = ({ onError, onLogout }) => {
 				  <div className="profile__me me">
           	<div>
     					<div className="me__avatar">
-                <FileLoadWrapper ref={avatarRef} onChange={(event) => apiService.handleNewAvatar(
-                  event,
-                  setAvatarState,
-                  () => apiService.fetchUserAvatar(setUserAvatar)
-                )}>
-                  <Avatar data={getUserAvatar(userAvatar.data)} onClick={() => addNewFile(avatarRef)} />
-                </FileLoadWrapper>
+                <input type="file" name="file" ref={avatarRef} onChange={handleAvatarUpload} />
+                <Avatar data={getUserAvatar(userAvatar.data)} onClick={() => addNewFile(avatarRef)} />
               </div>
   					  <div className="me__info">
                 <LazyRender status={infoList.status}>
@@ -203,13 +247,8 @@ export const Profile = ({ onError, onLogout }) => {
                 </LazyRender>
               </div>
               <div className="profile__add-file">
-                <FileLoadWrapper ref={fileRef} onChange={(event) => apiService.handleFileUpload(
-                  event,
-                  setFileState,
-                  () => apiService.fetchUserFiles(setUserFiles)
-                )}>
-                  <Button onClick={() => addNewFile(fileRef)}>Add new file</Button>
-                </FileLoadWrapper>
+                <input type="file" name="file" ref={fileRef} onChange={handleFileUpload} />
+                <Button onClick={() => addNewFile(fileRef)}>Add new file</Button>
               </div>
             </div>
 				  </div>
@@ -217,12 +256,8 @@ export const Profile = ({ onError, onLogout }) => {
 				<div className="profile__files">
           <LazyRender status={fileItems.status}>
             <FileList items={fileItems.data}
-              onDelete={
-                (id) => apiService.handleDeleteFile(id, fileItems, setUserFiles)
-              }
-              onEdit={
-                (id, fileName) => apiService.handleEditFile(id, fileName, fileItems, setUserFiles)
-              }
+              onDelete={handleDeleteFile}
+              onEdit={handleEditFile}
               stub={
                 <span className="profile__no-items">You have 0 files</span>
               }

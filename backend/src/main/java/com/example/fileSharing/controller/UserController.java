@@ -27,18 +27,18 @@ public class UserController {
 
   @GetMapping("/all")
   @BatchSize(size = 100)
-  public ResponseEntity<UsersDto> getUsers(
+  public ResponseEntity<ListDataDto<UserInfoDto>> getUsers(
     @PathParam("userName") String userName
   ) {
-    UsersDto usersDto = new UsersDto();
+    ListDataDto<UserInfoDto> listDataDto = new ListDataDto<>();
     try {
       List<UserInfoDto> users = userService.getUsers(userName);
-      usersDto.setUsers(users);
-      usersDto.setMessage("OK");
-      return ResponseEntity.ok(usersDto);
+      listDataDto.setData(users);
+      listDataDto.setMessage("OK");
+      return ResponseEntity.ok(listDataDto);
     } catch (Exception e) {
-      usersDto.setMessage("Error while fetching users");
-      return ResponseEntity.badRequest().body(usersDto);
+      listDataDto.setMessage("Error while fetching users");
+      return ResponseEntity.badRequest().body(listDataDto);
     }
   }
 
@@ -83,13 +83,14 @@ public class UserController {
   public ResponseEntity<MessageDto> setUserAvatar(
     @RequestParam(name = "avatar") MultipartFile avatar
   ) {
+    MessageDto messageDto = new MessageDto();
     try {
       fileService.uploadAvatar(avatar);
-      return ResponseEntity.ok(new MessageDto("OK"));
+      messageDto.setMessage("OK");
+      return ResponseEntity.ok(messageDto);
     } catch (Exception e) {
-      return ResponseEntity.badRequest().body(
-        new MessageDto("Problem with uploading the avatar")
-      );
+      messageDto.setMessage("Problem with uploading the avatar");
+      return ResponseEntity.badRequest().body(messageDto);
     }
   }
 }

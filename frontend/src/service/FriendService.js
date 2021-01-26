@@ -6,84 +6,26 @@ import {
   acceptFriendRequest,
   declineFriendRequest
 } from 'api';
-import { defaultStatusObject, defaultResponseObject, RES_STATUS, FRIEND_REQUEST_STATUS } from 'utils';
+import {
+  FRIEND_REQUEST_STATUS,
+  promiseWrapResponse
+} from 'utils';
 
 export default class {
   constructor(onError) {
     this.onError = onError;
   }
 
-  sendFriendRequest = async (userId, cb) =>  {
-    cb(defaultResponseObject());
-    try {
-      const res = await sendFriendRequest(userId);
-      cb({
-        data: res.data.users,
-        status: res.status
-      });
-    } catch (error) {
-      cb({
-        ...defaultResponseObject(),
-        status: RES_STATUS.ERROR
-      });
-      this.onError(error.response.data);
-    }
-  }
+  sendFriendRequest = (userId) => promiseWrapResponse.call(this, sendFriendRequest, null, userId);
 
-  deleteFriend = async (id, cb, successCb) =>  {
-    cb(defaultResponseObject());
-    const res = await deleteFriend(id);
-    if (res.status === RES_STATUS.OK) {
-      cb({
-        status: res.status
-      });
-      successCb();
-      return;
-    }
-    cb({
-      ...defaultResponseObject(),
-      status: RES_STATUS.ERROR
-    });
-    this.onError(res.data);
-  }
+  deleteFriend = (id) =>  promiseWrapResponse.call(this, deleteFriend, null, id);
+
+  getFriends = () => promiseWrapResponse.call(this, getAllFriends, null);
 
 
-  getFriends = async (cb) => {
-    try {
-      const res = await getAllFriends();
-      cb({
-        ...defaultResponseObject(),
-        data: res.data.users,
-        status: res.status
-      });
-    } catch (error) {
-      cb({
-        ...defaultResponseObject(),
-        status: RES_STATUS.ERROR
-      });
-      this.onError(error.response.data);
-    }
-  };
+  getFriendRequests = () =>  promiseWrapResponse.call(this, getFriendRequests, null);
 
-
-  getFriendRequests = async () => {
-    try {
-      const res = await getFriendRequests();
-      return {
-      ...defaultResponseObject(),
-        data: res.data.users,
-        status: res.status
-      };
-    } catch (error) {
-      this.onError(error.response.data);
-      return {
-        ...defaultResponseObject(),
-        status: RES_STATUS.ERROR
-      };
-    }
-  };
-
-  handleFriendRequest = async (id, status, cb) => {
+  handleFriendRequest = (id, status) => {
     let neededCbFunc;
     switch(status) {
       case FRIEND_REQUEST_STATUS.APPROVED:
@@ -93,12 +35,6 @@ export default class {
         neededCbFunc = declineFriendRequest;
         break;
     }
-
-    try {
-      const res = await neededCbFunc(id);
-      res.status === RES_STATUS.OK && cb();
-    } catch (error) {
-      this.onError(error.response.data);
-    }
+    return promiseWrapResponse.call(this, neededCbFunc, null, id);
   };
 }

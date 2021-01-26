@@ -1,6 +1,5 @@
-export default (filesObj) => {
-  return filesObj.files.map((file) => ({
+export default (filesObj) =>
+  filesObj.files.map((file) => ({
     id: file.id,
     name: file.originalName
   }));
-};

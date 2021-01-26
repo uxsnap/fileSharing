@@ -1,5 +1,5 @@
-import { getFriendFiles, downloadFileById } from 'api';
-import { defaultResponseObject, RES_STATUS } from 'utils';
+import {getFriendFiles, downloadFileById, uploadAvatar, uploadFile, editFile, deleteFile, getUserFiles} from 'api';
+import { defaultResponseObject, promiseWrapResponse, RES_STATUS} from 'utils';
 import FileDownload from 'js-file-download';
 
 export default class {
@@ -13,6 +13,7 @@ export default class {
   };
 
   fetchUserFiles = async (userId) => {
+    promiseWrapResponse.call(this, getFriendFiles, userId)
     try {
       const res = await getFriendFiles(userId);
       if (res.data) {
@@ -38,4 +39,15 @@ export default class {
       };
     }
   };
+
+  handleFileUpload = (file) =>
+    promiseWrapResponse.call(this, uploadFile, null, file);
+
+
+  handleEditFile = (fileId, fileName) =>
+    promiseWrapResponse.call(this, editFile, null, fileId, fileName);
+
+  handleDeleteFile = (fileId) =>
+    promiseWrapResponse.call(this, deleteFile, null, fileId);
+
 }

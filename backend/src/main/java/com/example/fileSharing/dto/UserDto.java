@@ -14,6 +14,6 @@ import javax.validation.constraints.Size;
 @NoArgsConstructor
 public class UserDto {
   @NotBlank(message = "Username must not be empty")
-  @Size(max = 255, message = "Username's length must be lesser than 255")
+  @Size(max = 255, message = "Username's length must be less than 255")
   protected String userName;
 }
