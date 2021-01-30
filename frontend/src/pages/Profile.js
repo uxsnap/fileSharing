@@ -29,6 +29,7 @@ import {
   serializeRequestData, RES_STATUS
 } from 'utils';
 import { UserService, AuthService, FriendService, FileService } from 'service';
+import {DEFAULT_TIME_INTERVAL} from "../utils";
 
 export const Profile = ({ onError, onLogout }) => {
   const [fileState, setFileState] = useState(defaultStatusObject());
@@ -79,7 +80,7 @@ export const Profile = ({ onError, onLogout }) => {
     stepGetFriendRequests(true);
     const intervalId = setInterval(async () => {
       stepGetFriendRequests();
-    }, 3000);
+    }, DEFAULT_TIME_INTERVAL);
     setIntervalId(intervalId);
   }, []);
 

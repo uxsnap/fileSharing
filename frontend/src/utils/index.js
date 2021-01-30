@@ -12,4 +12,4 @@ export { default as serializeUserData } from './serializeUserData';
 export { default as serializeRequestData } from './serializeRequestData';
 export { default as useFriendRequest } from './useFriendRequest';
 export { default as promiseWrapResponse } from './promiseWrapResponse';
-export { default as prepareUserFiles } from './prepareUserFiles';
+export { default as serializeUserFiles } from './serializeUserFiles';

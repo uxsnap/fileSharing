@@ -1,6 +1,6 @@
 package com.example.fileSharing.helpers;
 
-import com.example.fileSharing.dto.UserAndPassAuthDto;
+import com.example.fileSharing.dto.RegisterDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
@@ -28,9 +28,9 @@ public class JwtAuthFilter extends UsernamePasswordAuthenticationFilter {
     HttpServletResponse response
   ) throws AuthenticationException {
     try {
-      UserAndPassAuthDto userAndPassAuthDto = new ObjectMapper().readValue(
+      RegisterDto userAndPassAuthDto = new ObjectMapper().readValue(
         request.getInputStream(),
-        UserAndPassAuthDto.class
+        RegisterDto.class
       );
 
       Authentication authentication = new UsernamePasswordAuthenticationToken(

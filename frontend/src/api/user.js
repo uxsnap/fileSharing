@@ -8,7 +8,7 @@ export const getUserData = () => {
 	return queryExecute('get', '/user');
 };
 
-export const getUserFiles = (userName) => {
+export const getUserFiles = () => {
 	return queryExecute('get', '/file');
 };
 

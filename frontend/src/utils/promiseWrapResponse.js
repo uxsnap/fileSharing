@@ -15,8 +15,4 @@ export default function (func, dataManipulationOptions, ...funcParams) {
       self.onError(res.data);
       return Promise.reject({ status: RES_STATUS.ERROR });
     })
-    .catch((error) => {
-      self.onError(error.response.data);
-      return Promise.reject({ status: RES_STATUS.ERROR });
-    });
 }

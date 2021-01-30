@@ -11,6 +11,8 @@ import com.example.fileSharing.repository.FileRepository;
 import com.example.fileSharing.repository.UserRepository;
 import javassist.NotFoundException;
 import lombok.AllArgsConstructor;
+import lombok.Data;
+import org.springframework.dao.DataAccessException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -29,35 +31,43 @@ import static com.example.fileSharing.helpers.ConstantClass.AVATAR_FOLDER;
 @AllArgsConstructor
 public class FileService {
   private final static String UPLOADED_FOLDER = "backend/src/files/";
-
+  private final UserService userService;
   private final UserRepository userRepository;
   private final FileRepository fileRepository;
   private final FileClientRepository fileClientRepository;
 
-  public List<File> getAllUserFiles() {
-    String currentUser = CurrentLoggedUser.getCurrentUser();
-    User user = userRepository.findByUsername(currentUser);
-    return fileRepository.findAllByUserId(user.getId());
-  }
-
-  public File getFriendsFileById(UUID fileId) {
-    File requiredFile = null;
-    String currentUser = CurrentLoggedUser.getCurrentUser();
-    List<UserFriend> friends = userRepository.findByUsername(currentUser)
-      .getUserFriends();
-    for (UserFriend friend : friends) {
-      List<File> files = friend.getFriendProfile().getFiles();
-      requiredFile = files.stream().filter(file -> file.getId().equals(fileId)).findFirst().orElse(null);
-      if (requiredFile != null)
-        break;
+  public List<File> getAllUserFiles() throws Exception {
+    try {
+      String currentUser = CurrentLoggedUser.getCurrentUser();
+      User user = userService.loadUserByUsername(currentUser);
+      return fileRepository.findAllByUserId(user.getId());
+    } catch (DataAccessException e) {
+      throw new Exception("Cannot get user files");
     }
-    return requiredFile;
   }
 
-  public List<FileShortInfoDto> getFriendFiles(UUID friendId) {
+  public File getFriendsFileById(UUID fileId) throws Exception {
+    try {
+      File requiredFile = null;
+      String currentUser = CurrentLoggedUser.getCurrentUser();
+      List<UserFriend> friends = userService.loadUserByUsername(currentUser)
+        .getUserFriends();
+      for (UserFriend friend : friends) {
+        List<File> files = friend.getFriendProfile().getFiles();
+        requiredFile = files.stream().filter(file -> file.getId().equals(fileId)).findFirst().orElse(null);
+        if (requiredFile != null)
+          break;
+      }
+      return requiredFile;
+    } catch (Exception e) {
+      throw new Exception("Cannot get friend's file");
+    }
+  }
+
+  public List<FileShortInfoDto> getFriendFiles(UUID friendId) throws Exception {
     String currentUser = CurrentLoggedUser.getCurrentUser();
     try {
-      User user = userRepository.findByUsername(currentUser);
+      User user = userService.loadUserByUsername(currentUser);
       List<UserFriend> userFriends = user.getUserFriends();
       UserFriend userFriend = userFriends.stream()
           .filter(u -> u.getFriendProfile().getId().equals(friendId))
@@ -71,27 +81,27 @@ public class FileService {
         )).collect(Collectors.toList());
     } catch (Exception e) {
       e.printStackTrace();
-      return new ArrayList<>();
+      throw new Exception("Cannot obtain friend request users");
     }
   }
 
 
-  public void deleteFile(UUID fileId) {
+  public void deleteFile(UUID fileId) throws Exception {
     String currentUser = CurrentLoggedUser.getCurrentUser();
     try {
-      User user = userRepository.findByUsername(currentUser);
+      User user = userService.loadUserByUsername(currentUser);
       File file = user.getFiles().stream()
         .filter(item -> item.getId()
           .equals(fileId))
         .findFirst()
         .orElse(null);
-      if (file == null) throw new NullPointerException("No needed file");
+      if (file == null) throw new NullPointerException("File not found");
       UUID curFileId = file.getId();
       fileClientRepository.deleteByFileId(curFileId);
       fileRepository.deleteFileById(curFileId);
       Files.delete(Paths.get(file.getLink()));
     } catch (Exception e) {
-      e.printStackTrace();
+      throw new Exception("Cannot delete file");
     }
   }
 
@@ -110,62 +120,73 @@ public class FileService {
     );
 
     String path = UPLOADED_FOLDER + curFileName;
-    User user = userRepository.findByUsername(userName);
-    if (user == null) throw new UsernameNotFoundException("Cannot find user with this username");
+    User user = userService.loadUserByUsername(userName);
+    if (user == null) throw new UsernameNotFoundException("Cannot find user with provided username");
 
-    FileOutputStream output = new FileOutputStream(path);
-    output.write(bytes);
-    output.close();
-    File fileEntity = new File();
+    try {
+      FileOutputStream output = new FileOutputStream(path);
+      output.write(bytes);
+      output.close();
+      File fileEntity = new File();
+      fileEntity.setUser(user);
+      fileEntity.setName(curFileName);
+      fileEntity.setSize(file.getSize());
+      fileEntity.setLink(path);
+      fileEntity.setOriginalName(file.getOriginalFilename());
 
-    fileEntity.setUser(user);
-    fileEntity.setName(curFileName);
-    fileEntity.setSize(file.getSize());
-    fileEntity.setLink(path);
-    fileEntity.setOriginalName(file.getOriginalFilename());
-
-    fileRepository.save(fileEntity);
-    fileClientRepository.save(new FileClient(user.getUsername(), fileEntity));
+      fileRepository.save(fileEntity);
+      fileClientRepository.save(new FileClient(user.getUsername(), fileEntity));
+    } catch (IOException ioException) {
+      throw new IOException("Cannot write file to disk");
+    } catch (DataAccessException dataAccessException) {
+      throw new Exception("Cannot upload user file");
+    }
   }
 
-  public void editFile(UUID fileId, String fileName) {
-    fileRepository.editFileName(fileId, fileName);
+  public void editFile(UUID fileId, String fileName) throws Exception {
+    try {
+      fileRepository.editFileName(fileId, fileName);
+    } catch (DataAccessException dataAccessException) {
+      throw new Exception("Cannot edit file");
+    }
   }
 
   public void uploadAvatar(MultipartFile avatar) throws Exception {
-    String currentUser = CurrentLoggedUser.getCurrentUser();
-    byte[] bytes = avatar.getBytes();
-    String curFileExtension =
-      Objects.requireNonNull(avatar
-        .getOriginalFilename())
-        .split("\\.")[1];
-    if (!curFileExtension.matches("png|jpe?g")) throw new Exception("Wrong file format");
-    User user = userRepository.findByUsername(currentUser);
-    if (user == null) throw new UsernameNotFoundException("User cannot be found");
-    String prevAvatar = user.getAvatar();
-    if (prevAvatar != null) {
-      Path prevFilePath = Paths.get(prevAvatar);
-      Files.delete(prevFilePath);
-    }
-    String curFileName = String.format(
-      "%s.%s",
-      UUID.randomUUID().toString(),
-      curFileExtension
-    );
-    Path folder = Paths.get(AVATAR_FOLDER);
-
-    if (!Files.exists(folder)) {
-      Files.createDirectory(folder);
-    }
-
-    String path = AVATAR_FOLDER + curFileName;
-    Path curPath = Paths.get(path);
-    user.setAvatar(path.replace("backend/src", ""));
     try {
+      String currentUser = CurrentLoggedUser.getCurrentUser();
+      byte[] bytes = avatar.getBytes();
+      String curFileExtension =
+        Objects.requireNonNull(avatar
+          .getOriginalFilename())
+          .split("\\.")[1];
+      if (!curFileExtension.matches("png|jpe?g")) throw new Exception("Wrong file format");
+      User user = userService.loadUserByUsername(currentUser);
+      if (user == null) throw new UsernameNotFoundException("User cannot be found");
+      String prevAvatar = user.getAvatar();
+      if (prevAvatar != null) {
+        Path prevFilePath = Paths.get(prevAvatar);
+        Files.delete(prevFilePath);
+      }
+      String curFileName = String.format(
+        "%s.%s",
+        UUID.randomUUID().toString(),
+        curFileExtension
+      );
+      Path folder = Paths.get(AVATAR_FOLDER);
+
+      if (!Files.exists(folder)) {
+        Files.createDirectory(folder);
+      }
+
+      String path = AVATAR_FOLDER + curFileName;
+      Path curPath = Paths.get(path);
+      user.setAvatar(path.replace("backend/src", ""));
       Files.write(curPath, bytes);
       userRepository.save(user);
     } catch (IOException exception) {
       throw new IOException("Cannot save avatar-file");
+    } catch (Exception e) {
+      throw new Exception("Problem with uploading the avatar");
     }
   }
 }

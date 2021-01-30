@@ -29,68 +29,84 @@ public class FriendService {
     return userRepository.findByUsername(currentUser).getId();
   }
 
-  public List<UserFriend> sendFriendRequests(UserIdsDto userIdsDto) {
-    List<UUID> users = userIdsDto.getUsers();
-    UUID curUserId = getCurrentUserId();
-    User user = userRepository.findById(curUserId).orElse(null);
-    if (user == null) throw new UsernameNotFoundException("Cannot find user");
-    List<UUID> currentUserFriends = user
-      .getUserFriends()
-      .stream()
-      .map(UserFriend::getId).collect(Collectors.toList());
-    List<UserFriend> userFriendRequests = new ArrayList<>();
-    for (UUID id: users) {
-      if (currentUserFriends.contains(id)) {
-        continue;
+  public List<UserFriend> sendFriendRequests(UserIdsDto userIdsDto) throws Exception {
+    try {
+      List<UUID> users = userIdsDto.getUsers();
+      UUID curUserId = getCurrentUserId();
+      User user = userRepository.findById(curUserId).orElse(null);
+      if (user == null) throw new UsernameNotFoundException("Cannot find user");
+      List<UUID> currentUserFriends = user
+        .getUserFriends()
+        .stream()
+        .map(UserFriend::getId).collect(Collectors.toList());
+      List<UserFriend> userFriendRequests = new ArrayList<>();
+      for (UUID id: users) {
+        if (currentUserFriends.contains(id)) {
+          continue;
+        }
+        User listUser = userRepository.findById(id).orElseThrow(null);
+        if (listUser == null) throw new UsernameNotFoundException("Cannot find user with this name");
+        userFriendRequests.add(
+          new UserFriend(user, listUser, FriendRequestStatusEnum.PENDING)
+        );
       }
-      User listUser = userRepository.findById(id).orElseThrow(null);
-      if (listUser == null) throw new UsernameNotFoundException("Cannot find user with this name");
-      userFriendRequests.add(
-        new UserFriend(user, listUser, FriendRequestStatusEnum.PENDING)
+      for (UserFriend friendRequest: userFriendRequests) {
+        userFriendRepository.save(friendRequest);
+      }
+
+      return userFriendRequests;
+    } catch (Exception e) {
+      throw new Exception("Cannot send friend request");
+    }
+  }
+
+  public void addFriend(UUID potentialFriendId) throws Exception {
+    try {
+      UUID curUserId = getCurrentUserId();
+      User user = userRepository.findById(curUserId).orElse(null);
+      User friend = userRepository.findById(potentialFriendId).orElse(null);
+      if (user == null || friend == null) throw new NullPointerException("Cannot find user");
+
+      UserFriend userFriend = userFriendRepository
+        .findByUserAndFriendProfileAndStatus(
+          friend,
+          user,
+          FriendRequestStatusEnum.PENDING
       );
+
+      if (userFriend == null) throw new NullPointerException("Cannot find friend");
+
+      userFriend.setStatus(FriendRequestStatusEnum.ACCEPTED);
+      userFriendRepository.save(
+        userFriend
+      );
+      userFriendRepository.save(
+        new UserFriend(
+          userFriend.getFriendProfile(),
+          userFriend.getUser(),
+          FriendRequestStatusEnum.ACCEPTED
+        )
+      );
+    } catch (Exception e) {
+      throw new Exception("Cannot add a friend");
     }
-    for (UserFriend friendRequest: userFriendRequests) {
-      userFriendRepository.save(friendRequest);
+  }
+
+  public void declineFriendRequest(UUID potentialFriendId) throws Exception {
+    try {
+      userFriendRepository.deleteFriend(getCurrentUserId(), potentialFriendId);
+    } catch (Exception e) {
+      throw new Exception("Cannot decline friend request");
     }
-
-    return userFriendRequests;
   }
 
-  public void addFriend(UUID potentialFriendId) {
-    UUID curUserId = getCurrentUserId();
-    User user = userRepository.findById(curUserId).orElse(null);
-    User friend = userRepository.findById(potentialFriendId).orElse(null);
-    if (user == null || friend == null) throw new NullPointerException("Cannot find user");
-
-    UserFriend userFriend = userFriendRepository
-      .findByUserAndFriendProfileAndStatus(
-        friend,
-        user,
-        FriendRequestStatusEnum.PENDING
-    );
-
-    if (userFriend == null) throw new NullPointerException("Cannot find friend");
-
-    userFriend.setStatus(FriendRequestStatusEnum.ACCEPTED);
-    userFriendRepository.save(
-      userFriend
-    );
-    userFriendRepository.save(
-      new UserFriend(
-        userFriend.getFriendProfile(),
-        userFriend.getUser(),
-        FriendRequestStatusEnum.ACCEPTED
-      )
-    );
-  }
-
-  public void declineFriendRequest(UUID potentialFriendId) {
-    userFriendRepository.deleteFriend(getCurrentUserId(), potentialFriendId);
-  }
-
-  public void deleteFriend(UUID friendId) {
-    userFriendRepository
-      .deleteFriend(getCurrentUserId(), friendId);
+  public void deleteFriend(UUID friendId) throws Exception {
+    try {
+      userFriendRepository
+        .deleteFriend(getCurrentUserId(), friendId);
+    } catch (Exception e) {
+      throw new Exception("Cannot delete a friend");
+    }
   }
 
   private List<UserInfoDto> handleFriends(
@@ -104,27 +120,35 @@ public class FriendService {
       .collect(Collectors.toList());
   }
 
-  public List<UserInfoDto> getFriends() {
-    String currentUser = CurrentLoggedUser.getCurrentUser();
-    User user = userRepository.findByUsername(currentUser);
-    return handleFriends(
-      userFriendRepository
-        .findAllByUserAndStatus(user, FriendRequestStatusEnum.ACCEPTED),
-        userFriend -> new UserInfoDto(
-          userFriend.getFriendProfile().getId(),
-          userFriend.getFriendProfile().getUsername())
-    );
+  public List<UserInfoDto> getFriends() throws Exception {
+    try {
+      String currentUser = CurrentLoggedUser.getCurrentUser();
+      User user = userRepository.findByUsername(currentUser);
+      return handleFriends(
+        userFriendRepository
+          .findAllByUserAndStatus(user, FriendRequestStatusEnum.ACCEPTED),
+          userFriend -> new UserInfoDto(
+            userFriend.getFriendProfile().getId(),
+            userFriend.getFriendProfile().getUsername())
+      );
+    } catch (Exception e) {
+      throw new Exception("Cannot obtain user friends");
+    }
   }
 
-  public List<UserInfoDto> getPotentialFriends() {
-    String currentUser = CurrentLoggedUser.getCurrentUser();
-    User user = userRepository.findByUsername(currentUser);
-    return handleFriends(
-      userFriendRepository
-        .findAllByFriendProfileAndStatus(user, FriendRequestStatusEnum.PENDING),
-      userFriend -> new UserInfoDto(
-        userFriend.getUser().getId(),
-        userFriend.getUser().getUsername())
-    );
+  public List<UserInfoDto> getPotentialFriends() throws Exception {
+    try {
+      String currentUser = CurrentLoggedUser.getCurrentUser();
+      User user = userRepository.findByUsername(currentUser);
+      return handleFriends(
+        userFriendRepository
+          .findAllByFriendProfileAndStatus(user, FriendRequestStatusEnum.PENDING),
+        userFriend -> new UserInfoDto(
+          userFriend.getUser().getId(),
+          userFriend.getUser().getUsername())
+      );
+    } catch (Exception e) {
+      throw new Exception("Cannot obtain friend request users");
+    }
   }
 }

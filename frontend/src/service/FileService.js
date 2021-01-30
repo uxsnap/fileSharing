@@ -1,6 +1,7 @@
 import {getFriendFiles, downloadFileById, uploadAvatar, uploadFile, editFile, deleteFile, getUserFiles} from 'api';
 import { defaultResponseObject, promiseWrapResponse, RES_STATUS} from 'utils';
 import FileDownload from 'js-file-download';
+import { serializeUserFiles } from "../utils";
 
 export default class {
   constructor(onError) {
@@ -12,33 +13,8 @@ export default class {
     FileDownload(res.data, fileName);
   };
 
-  fetchUserFiles = async (userId) => {
-    promiseWrapResponse.call(this, getFriendFiles, userId)
-    try {
-      const res = await getFriendFiles(userId);
-      if (res.data) {
-        res.data = res.data.files
-          .map((file) => ({
-            id: file.fileId,
-            text: file.fileName,
-            link: file.fileLink,
-            iconType: 'download'
-          }));
-      }
-      return {
-        ...defaultResponseObject(),
-        data: res.data,
-        status: res.status
-      };
-      // return res;
-    } catch (error) {
-      this.onError(error);
-      return {
-        ...defaultResponseObject(),
-        status: RES_STATUS.ERROR
-      };
-    }
-  };
+  fetchUserFiles = (userId) =>
+    promiseWrapResponse.call(this, getFriendFiles, serializeUserFiles, userId);
 
   handleFileUpload = (file) =>
     promiseWrapResponse.call(this, uploadFile, null, file);

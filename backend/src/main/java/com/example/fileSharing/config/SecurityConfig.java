@@ -43,7 +43,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
       .and()
       .addFilterAfter(new TokenVerifier(), JwtAuthFilter.class)
       .authorizeRequests()
-      .antMatchers("/**").permitAll();
+        .antMatchers("/**")
+        .permitAll()
+      .and()
+      .formLogin().usernameParameter("email").permitAll();
   }
 
   @Override

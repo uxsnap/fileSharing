@@ -1,62 +1,89 @@
 package com.example.fileSharing.controller;
 
-import com.example.fileSharing.dto.JwtResponse;
-import com.example.fileSharing.dto.MessageDto;
-import com.example.fileSharing.dto.UserAndPassAuthDto;
+import com.example.fileSharing.dto.*;
 import com.example.fileSharing.entity.User;
-import com.example.fileSharing.helpers.CurrentLoggedUser;
 import com.example.fileSharing.helpers.ErrorMessageUnwrapper;
-import com.example.fileSharing.repository.UserRepository;
 import com.example.fileSharing.service.AuthService;
+import com.example.fileSharing.service.UserService;
 import lombok.AllArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.validation.BindingResult;
 import org.springframework.validation.Errors;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.Collections;
 
 @RestController
 @RequestMapping("/auth")
 @AllArgsConstructor
 public class AuthController {
   private final AuthService authService;
+  private final UserService userService;
 
   @PostMapping("/login")
   public ResponseEntity<JwtResponse> loginUser(
-    @Valid @RequestBody UserAndPassAuthDto userDto, Errors errors) {
+    @Valid @RequestBody LoginDto userDto, Errors errors) {
     JwtResponse jwtResponse = new JwtResponse();
     if (errors.hasErrors()) {
       jwtResponse.setErrors(ErrorMessageUnwrapper.errors(errors));
       return ResponseEntity.badRequest().body(jwtResponse);
     }
-    try {
-      jwtResponse = authService.loginUser(userDto);
+    jwtResponse = authService.loginUser(userDto);
+    if (jwtResponse.getErrors().isEmpty())
       return ResponseEntity.ok(jwtResponse);
-    } catch (Exception e) {
-      return ResponseEntity.badRequest().body(jwtResponse);
-    }
+    return ResponseEntity.badRequest().body(jwtResponse);
   }
 
   @PostMapping("/register")
-  public ResponseEntity<MessageDto> registerNewUser(@Valid @RequestBody UserAndPassAuthDto userDto, Errors errors) {
+  public ResponseEntity<MessageDto> registerNewUser(@Valid @RequestBody RegisterDto userDto, Errors errors) {
     if (errors.hasErrors()) {
       MessageDto messageDto = new MessageDto();
       messageDto.setErrors(ErrorMessageUnwrapper.errors(errors));
       return ResponseEntity.badRequest().body(messageDto);
     }
+
     MessageDto messageDto = new MessageDto();
     try {
+      messageDto.setMessage("New user has been registered");
       authService.registerNewUserAccount(userDto);
       return ResponseEntity.ok(messageDto);
     } catch (Exception e) {
+      messageDto.setErrors(Collections.singletonList(e.getMessage()));
       return ResponseEntity.badRequest().body(messageDto);
     }
   }
+
+  /* Future functionality */
+  @PostMapping("/resetPassword")
+  public ResponseEntity<MessageDto> resetPassword(@Valid @RequestBody EmailDto emailDto, Errors errors) {
+    if (errors.hasErrors()) {
+      MessageDto messageDto = new MessageDto();
+      messageDto.setErrors(ErrorMessageUnwrapper.errors(errors));
+      return ResponseEntity.badRequest().body(messageDto);
+    }
+
+    User user = userService.findByEmail(emailDto.getEmail());
+    MessageDto messageDto = new MessageDto();
+    if (user == null) {
+      messageDto.setErrors(Collections.singletonList("Cannot find user with this email"));
+      return ResponseEntity.badRequest().body(messageDto);
+    }
+
+    try {
+//      authService.resetUserPassword(user);
+      messageDto.setMessage("Link to reset your password has been sent to your email");
+      return ResponseEntity.ok(messageDto);
+    } catch (Exception e) {
+      messageDto.setErrors(Collections.singletonList(e.getMessage()));
+      return ResponseEntity.badRequest().body(messageDto);
+    }
+  }
+
+//
+//  @PostMapping("/saveNewPassword")
+//  public ResponseEntity<MessageDto> saveNewPassword(@Valid PasswordDto passwordDto) {
+//
+//  }
 
   @PostMapping("/logout")
   public ResponseEntity<MessageDto> logoutUser() {

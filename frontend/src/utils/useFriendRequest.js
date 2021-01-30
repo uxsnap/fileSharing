@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import isEqual from "lodash.isequal";
 import {defaultResponseObject} from "./index";
+import {DEFAULT_TIME_INTERVAL} from "./constants";
 
 export default (intervalObj, friendService) => {
   const [friendRequests, setFriendRequests] = useState(defaultResponseObject());
@@ -15,7 +16,7 @@ export default (intervalObj, friendService) => {
     await stepGetFriendRequests(true);
     intervalObj.intervalId = setInterval(async () => {
       await stepGetFriendRequests();
-    }, 3000);
+    }, DEFAULT_TIME_INTERVAL);
   }, []);
 
   return [intervalObj, friendRequests];

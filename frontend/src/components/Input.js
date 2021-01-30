@@ -22,6 +22,7 @@ export default ({
       	onChange={(e) => onChange(e.target.value)} 
       	value={value}
       	placeholder={placeholder}
+				autoComplete='off'
     	/>
       {rightIcon &&  
         <Icon 

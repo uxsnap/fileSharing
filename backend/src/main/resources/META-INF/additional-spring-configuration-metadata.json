@@ -1,0 +1,8 @@
+{
+  "properties": [
+    {
+      "name": "spring.custom.reset_pass_template",
+      "type": "java.lang.String",
+      "description": "Description for spring.custom.reset_pass_template."
+    }
+  ] }

@@ -4,6 +4,8 @@ export const AUTH_TYPES = {
   FORGOT_PASS: { type: "forgot_pass", label: "Forgot Password", url: '/auth' }
 };
 
+export const DEFAULT_TIME_INTERVAL = 3000;
+
 
 /* This object is HttpStatus mapping. 
 	LOADING field is -1 because there is no such status

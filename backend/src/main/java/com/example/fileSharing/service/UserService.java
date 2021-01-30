@@ -19,16 +19,32 @@ public class UserService implements UserDetailsService {
 
   @Override
   public User loadUserByUsername(String s) throws UsernameNotFoundException {
-    return userRepository.findByUsername(s);
+    User user = userRepository.findByEmail(s);
+    if (user == null) {
+      throw new UsernameNotFoundException("Not found!");
+    }
+    return user;
   }
 
-  public String getAvatar(String userName) throws NullPointerException {
-    User user = this.loadUserByUsername(userName);
-    return user.getAvatar();
+  public User findByEmail(String email) throws NullPointerException {
+    return userRepository.findByEmail(email);
   }
 
-  public List<UserInfoDto> getUsers(String userName) throws NullPointerException {
-    String currentUser = CurrentLoggedUser.getCurrentUser();
-    return userRepository.findAllNonFriends(currentUser, userName);
+  public String getAvatar(String userName) throws Exception {
+    try {
+      User user = this.loadUserByUsername(userName);
+      return user.getAvatar();
+    } catch (Exception e) {
+      throw new Exception("Problem with fetching avatar");
+    }
+  }
+
+  public List<UserInfoDto> getUsers(String userName) throws Exception {
+    try {
+      String currentUser = CurrentLoggedUser.getCurrentUser();
+      return userRepository.findAllNonFriends(currentUser, userName);
+    } catch (Exception e) {
+      throw new Exception("Cannot get users");
+    }
   }
 }

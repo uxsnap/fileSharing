@@ -1,22 +1,39 @@
-import { onLogout, onLogin, onRegister } from 'api';
+import { onLogout, onLogin, onRegister, onResetPassword } from 'api';
+import {RES_STATUS} from "../utils";
 
 export default class {
   constructor(onError) {
     this.onError = onError;
   }
 
-  handleLogin = async (login, password) => {
+  handleLogin = async (email, password) => {
     try {
-      await onLogin(login, password);
+      await onLogin(email, password);
     } catch(error) {
       this.onError(error.response.data);
     }
   };
 
-  handleRegister = async (login, password) => {
+  handleRegister = async (email, login, password) => {
     try {
-      await onRegister(login, password);
+      const res = await onRegister(email, login, password);
+      console.log(res);
+      if (res.status === RES_STATUS.OK) {
+        return res.data.message;
+      }
     } catch(error) {
+      this.onError(error.response.data);
+    }
+  };
+
+  handleResetPassword = async (email) => {
+    try {
+      const res = await onResetPassword(email);
+      console.log(res);
+      if (res.status === RES_STATUS.OK) {
+        return res.data.message;
+      }
+    } catch (error) {
       this.onError(error.response.data);
     }
   };

@@ -16,6 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.websocket.server.PathParam;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @RestController
@@ -37,13 +38,13 @@ public class UserController {
       listDataDto.setMessage("OK");
       return ResponseEntity.ok(listDataDto);
     } catch (Exception e) {
-      listDataDto.setMessage("Error while fetching users");
+      listDataDto.setErrors(Collections.singletonList(e.getMessage()));
       return ResponseEntity.badRequest().body(listDataDto);
     }
   }
 
   @GetMapping
-  public ResponseEntity<UserInfoDto> getUser() {
+  public ResponseEntity<UserInfoDto> getUser() throws Exception {
     UserInfoDto userInfoDto = new UserInfoDto();
     try {
       String userName = CurrentLoggedUser.getCurrentUser();
@@ -53,10 +54,10 @@ public class UserController {
         userInfoDto.setMessage("OK");
         return ResponseEntity.ok(userInfoDto);
       }
-      userInfoDto.setMessage("No user with provided name");
+      userInfoDto.setErrors(Collections.singletonList("No user with provided name"));
       return ResponseEntity.badRequest().body(userInfoDto);
     } catch (Exception e) {
-      userInfoDto.setMessage("Error while fetching user data");
+      userInfoDto.setErrors(Collections.singletonList(e.getMessage()));
       return ResponseEntity.badRequest().body(userInfoDto);
     }
   }
@@ -73,7 +74,7 @@ public class UserController {
       return ResponseEntity.ok(avatarDto);
     } catch (Exception e) {
       AvatarDto avatarDto = new AvatarDto();
-      avatarDto.setMessage("Problem with fetching avatar");
+      avatarDto.setErrors(Collections.singletonList(e.getMessage()));
       avatarDto.setAvatar(null);
       return ResponseEntity.badRequest().body(avatarDto);
     }
@@ -89,7 +90,7 @@ public class UserController {
       messageDto.setMessage("OK");
       return ResponseEntity.ok(messageDto);
     } catch (Exception e) {
-      messageDto.setMessage("Problem with uploading the avatar");
+      messageDto.setErrors(Collections.singletonList(e.getMessage()));
       return ResponseEntity.badRequest().body(messageDto);
     }
   }

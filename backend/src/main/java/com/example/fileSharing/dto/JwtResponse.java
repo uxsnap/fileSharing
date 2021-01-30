@@ -9,5 +9,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class JwtResponse extends MessageDto {
   private String token;
-  private String username;
+  private String email;
 }

@@ -11,7 +11,9 @@ import java.util.UUID;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, UUID> {
-  User findByUsername(String username);
+  User findByUsername(String userName);
+  User findByEmail(String email);
+  User findByUsernameOrEmail(String userName, String email);
 
   @Query("SELECT new com.example.fileSharing.dto.UserInfoDto(u.id, u.username, u.avatar) " +
     "FROM User u where u.username like CONCAT('%', ?2, '%') and u.username <> ?1 and u.id not in " +

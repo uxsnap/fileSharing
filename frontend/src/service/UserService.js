@@ -5,7 +5,7 @@ import {
 	createPersonFilesList,
 	promiseWrapResponse
 } from 'utils';
-import { getUserData, getUserFiles, uploadFile, deleteFile, editFile, uploadAvatar, getUserAvatar, getUsers } from 'api';
+import { getUserData, getUserFiles, uploadAvatar, getUserAvatar, getUsers } from 'api';
 
 export default class {
 	constructor(onError) {

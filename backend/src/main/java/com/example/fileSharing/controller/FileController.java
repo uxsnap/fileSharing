@@ -10,10 +10,12 @@ import com.example.fileSharing.repository.FileRepository;
 import com.example.fileSharing.service.FileService;
 import lombok.AllArgsConstructor;
 import org.apache.coyote.Response;
+import org.aspectj.bridge.Message;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.*;
+import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -25,10 +27,7 @@ import java.nio.channels.FileChannel;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.ResourceBundle;
-import java.util.UUID;
+import java.util.*;
 
 
 @RestController
@@ -39,14 +38,15 @@ public class FileController {
 
   @GetMapping
   public ResponseEntity<FilesDto<File>> getUserFiles() {
+    FilesDto<File> filesDto = new FilesDto<File>();
     try {
       List<File> files = fileService.getAllUserFiles();
-      FilesDto<File> filesDto = new FilesDto<File>();
       filesDto.setMessage("OK");
       filesDto.setFiles(files);
       return ResponseEntity.ok(filesDto);
     } catch (Exception e) {
-      return new ResponseEntity<>(new FilesDto<>(new ArrayList<>()), HttpStatus.INTERNAL_SERVER_ERROR);
+      filesDto.setErrors(Collections.singletonList(e.getMessage()));
+      return ResponseEntity.badRequest().body(filesDto);
     }
   }
 
@@ -54,9 +54,9 @@ public class FileController {
   public ResponseEntity<Resource> download(
     @PathVariable(name = "fileId") UUID fileId
   ) {
-    File file = fileService.getFriendsFileById(fileId);
-    if (file == null) throw new NullPointerException("No such file");
     try {
+      File file = fileService.getFriendsFileById(fileId);
+      if (file == null) throw new NullPointerException("No such file");
       Path path = Paths.get(file.getLink());
       FileChannel fileChannel = FileChannel.open(path);
       long fileSize = fileChannel.size();
@@ -70,7 +70,7 @@ public class FileController {
     } catch (IOException ioException) {
       System.err.println("Problem with IO when downloading file");
       return ResponseEntity.badRequest().body(null);
-    } catch (NullPointerException e) {
+    } catch (Exception e) {
       e.printStackTrace();
       return ResponseEntity.badRequest().body(null);
     }
@@ -80,13 +80,16 @@ public class FileController {
   public ResponseEntity<MessageDto> uploadFile(
     @RequestParam(name = "file") MultipartFile file
   ) {
+    MessageDto messageDto = new MessageDto();
     try {
       fileService.uploadFile(file);
-      return ResponseEntity.ok(new MessageDto("OK"));
+      messageDto.setMessage("OK");
+      return ResponseEntity.ok(messageDto);
     } catch (Exception e) {
+      messageDto.setErrors(Collections.singletonList(e.getMessage()));
       return ResponseEntity
         .badRequest()
-        .body(new MessageDto("Error while fetching uploading file"));
+        .body(messageDto);
     }
   }
 
@@ -95,12 +98,15 @@ public class FileController {
     @PathVariable(name = "fileId") UUID fileId,
     @RequestBody FileNameDto fileName
   ) {
+    MessageDto messageDto = new MessageDto();
     try {
       fileService.editFile(fileId, fileName.getFileName());
-      return ResponseEntity.ok(new MessageDto("OK"));
+      messageDto.setMessage("OK");
+      return ResponseEntity.ok(messageDto);
     } catch (Exception e) {
+      messageDto.setErrors(Collections.singletonList(e.getMessage()));
       return ResponseEntity.badRequest()
-        .body(new MessageDto("Problem with editing the file"));
+        .body(messageDto);
     }
   }
 
@@ -108,12 +114,15 @@ public class FileController {
   public ResponseEntity<MessageDto> deleteFile(
     @PathVariable(name = "fileId") UUID fileId
   ) {
+    MessageDto messageDto = new MessageDto();
     try {
+      messageDto.setMessage("OK");
       fileService.deleteFile(fileId);
-      return ResponseEntity.ok(new MessageDto("OK"));
+      return ResponseEntity.ok(messageDto);
     } catch (Exception e) {
+      messageDto.setErrors(Collections.singletonList(e.getMessage()));
       return ResponseEntity.badRequest()
-        .body(new MessageDto("Problem with deleting the file"));
+        .body(messageDto);
     }
   }
 }

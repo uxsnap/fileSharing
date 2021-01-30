@@ -3,11 +3,14 @@ import { AUTH_TYPES } from "utils";
 import { Row, Col, Input, Button } from "components";
 import { getCurrentPageTypeLabel, createPageChangeButtons } from './helpers';
 import { AuthService } from "service";
+import {DEFAULT_TIME_INTERVAL} from "../../utils";
 
 export const Auth = ({ checkPage, onError }) => {
   const [curType, setType] = useState(AUTH_TYPES.LOGIN.type);
   const [login, setLogin] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [authResponseMessage, setAuthResponseMessage] = useState("");
 
   const authService = new AuthService(onError);
 
@@ -15,11 +18,16 @@ export const Auth = ({ checkPage, onError }) => {
     event.preventDefault();
     switch (curType) {
       case AUTH_TYPES.LOGIN.type:
-        await authService.handleLogin(login, password);
+        await authService.handleLogin(email, password);
         checkPage(login);
         break;
       case AUTH_TYPES.REGISTRATION.type:
-        await authService.handleRegister(login, password);
+        setAuthResponseMessage(await authService.handleRegister(email, login, password));
+        setTimeout(() => setAuthResponseMessage(''), DEFAULT_TIME_INTERVAL);
+        break;
+      case AUTH_TYPES.FORGOT_PASS.type:
+        setAuthResponseMessage(await authService.handleResetPassword(email));
+        setTimeout(() => setAuthResponseMessage(''), DEFAULT_TIME_INTERVAL);
         break;
     }
   };
@@ -30,12 +38,29 @@ export const Auth = ({ checkPage, onError }) => {
       <form action={curType} className="main-auth__form">
         <Row>
           <Col>
-            <Input onChange={setLogin} value={login} label="Username"/>
+            <Input onChange={setEmail} value={email} label="Email"/>
           </Col>
         </Row>
+        {
+          curType !== AUTH_TYPES.FORGOT_PASS.type &&
+            <>
+              {curType === AUTH_TYPES.REGISTRATION.type &&
+                <Row>
+                  <Col>
+                    <Input onChange={setLogin} value={login} label="Username"/>
+                  </Col>
+                </Row>
+              }
+              <Row>
+                <Col>
+                  <Input type="password" onChange={setPassword} value={password} label="Password"/>
+                </Col>
+              </Row>
+            </>
+        }
         <Row>
           <Col>
-            <Input type="password" onChange={setPassword} value={password} label="Password"/>
+            <span className="main-auth__response">{authResponseMessage}</span>
           </Col>
         </Row>
         <Row>

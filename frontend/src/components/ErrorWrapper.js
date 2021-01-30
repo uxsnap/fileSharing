@@ -10,16 +10,16 @@ export default ({ error, children, onClose }) => {
 		<div className="error-wrapper">
       {error &&
   			<div className="error-box">
-					<div>Error</div>
+					<div className="error-box__title">Error</div>
 					<div>
-						{errors ? (
+						{errors && (
 							<ul className="error-box__list">
 								{
 									errors.map((error) => (
 										<li>{error}</li>
 									))
 								}
-							</ul> ) : <div>{error.message}</div>
+							</ul>)
 						}
 					</div>
   				<Icon iconType="close" onClick={onClose}/>
