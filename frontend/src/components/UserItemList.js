@@ -1,4 +1,4 @@
-import { AvatarItem, NoInfo } from '.';
+ import { AvatarItem, NoInfo } from '.';
 import React from 'react';
 
 export const UserItemList = ({ Component, items }) => {

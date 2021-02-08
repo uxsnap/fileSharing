@@ -240,7 +240,7 @@ export const Profile = ({ onError, onLogout }) => {
           	<div>
     					<div className="me__avatar">
                 <input type="file" name="file" ref={avatarRef} onChange={handleAvatarUpload} />
-                <Avatar data={getUserAvatar(userAvatar.data)} onClick={() => addNewFile(avatarRef)} />
+                <Avatar src={getUserAvatar(userAvatar.data)} onClick={() => addNewFile(avatarRef)} />
               </div>
   					  <div className="me__info">
                 <LazyRender status={infoList.status}>

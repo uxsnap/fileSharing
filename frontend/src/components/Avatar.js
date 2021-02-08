@@ -1,11 +1,11 @@
 import React from 'react';
 import { Icon } from './index';
 
-export default ({ data, onClick }) => {
+export default ({ src, onClick }) => {
 	return (
 		<>
-			{data 
-				? <img src={data} alt="ME" onClick={onClick} />
+			{src 
+				? <img src={src} alt="ME" onClick={onClick} />
       	: <Icon iconType="person" onClick={onClick} />
       }
 		</>
