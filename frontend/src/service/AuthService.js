@@ -1,5 +1,5 @@
 import { onLogout, onLogin, onRegister, onResetPassword } from 'api';
-import {RES_STATUS} from "../utils";
+import { RES_STATUS } from "nuxxxcomponentlib/dist";
 
 export default class {
   constructor(onError) {

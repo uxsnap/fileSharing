@@ -1,10 +1,10 @@
 import OutsideClickHandler from 'react-outside-click-handler';
 import React, { useState, useEffect, useRef } from 'react';
 import isEqual from 'lodash.isequal';
-import { 
-  Row, 
-  Col, 
-  Icon, 
+import {
+  Row,
+  Col,
+  Icon,
   IconList,
   FileList,
   Button,
@@ -19,17 +19,18 @@ import {
   UserList,
   UserRequestItem,
   LazyRender,
-} from 'components';
+} from 'nuxxxcomponentlib/dist';
+import { RES_STATUS } from 'nuxxxcomponentlib/dist';
 import {
   defaultResponseObject,
   defaultStatusObject,
   getUserAvatar,
   MIN_SEARCH_LENGTH,
   serializeUserData,
-  serializeRequestData, RES_STATUS
+  serializeRequestData,
+  DEFAULT_TIME_INTERVAL
 } from 'utils';
 import { UserService, AuthService, FriendService, FileService } from 'service';
-import {DEFAULT_TIME_INTERVAL} from "../utils";
 
 export const Profile = ({ onError, onLogout }) => {
   const [fileState, setFileState] = useState(defaultStatusObject());
@@ -175,15 +176,15 @@ export const Profile = ({ onError, onLogout }) => {
 	return (
 		<div className="profile">
 			<Row>
-        <Col>  
+        <Col>
   				<div className="profile__header profile-header">
   					<div className="profile-header__brand">
               <Icon iconType="files" />
               <span className="profile-header__name">FILES</span>
-  					</div>		
+  					</div>
   					<div className="profile-header__search">
               <OutsideClickHandler onOutsideClick={() => handleSetSearch('')}>
-                <InputSelect 
+                <InputSelect
                   value={search}
                   onChange={handleSetSearch}
                   placeholder="Search for friends"
@@ -194,12 +195,12 @@ export const Profile = ({ onError, onLogout }) => {
                   checked={friendState.data}
                   minLength={MIN_SEARCH_LENGTH}
                   checkedIcon="check"
-                /> 
+                />
               </OutsideClickHandler>
   					</div>
             <div className="profile-header__friendRequests">
-              <UserList 
-                icon="user-friends" 
+              <UserList
+                icon="user-friends"
                 items={serializeRequestData(friendRequests.data, {
                   onRequest: handleFriendRequest
                 })}
@@ -207,20 +208,20 @@ export const Profile = ({ onError, onLogout }) => {
               />
             </div>
             <div className="profile-header__logout">
-              <Button onClick={onClickLogout}>Logout</Button>  
-            </div>		
+              <Button onClick={onClickLogout}>Logout</Button>
+            </div>
 				  </div>
         </Col>
 			</Row>
 			<Row curClass="profile__main">
         <SideMenu onActive={onActive} >
-          {serializeUserData(friends.data, { 
+          {serializeUserData(friends.data, {
             icon: 'close',
-            onIconClick: handleFriendDelete 
+            onIconClick: handleFriendDelete
           }).map((item) => (
-            <UserFilesProfile 
-              user={item} 
-              onMouseEnter={onMouseEnter} 
+            <UserFilesProfile
+              user={item}
+              onMouseEnter={onMouseEnter}
               active={checkActiveUserFiles(item.id)}
               deleteUser={handleFriendDelete}
             />

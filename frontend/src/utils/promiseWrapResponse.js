@@ -1,4 +1,4 @@
-import { RES_STATUS } from "./constants";
+import { RES_STATUS } from "nuxxxcomponentlib/dist";
 import { defaultResponseObject } from "./index";
 
 export default function (func, dataManipulationOptions, ...funcParams) {

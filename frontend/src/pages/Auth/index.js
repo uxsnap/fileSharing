@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
-import { AUTH_TYPES } from "utils";
-import { Row, Col, Input, Button } from "components";
+import { AUTH_TYPES, DEFAULT_TIME_INTERVAL } from "utils";
+import { Row, Col, Input, Button } from "nuxxxcomponentlib/dist";
 import { getCurrentPageTypeLabel, createPageChangeButtons } from './helpers';
 import { AuthService } from "service";
-import {DEFAULT_TIME_INTERVAL} from "../../utils";
 
 export const Auth = ({ checkPage, onError }) => {
   const [curType, setType] = useState(AUTH_TYPES.LOGIN.type);
@@ -65,7 +64,7 @@ export const Auth = ({ checkPage, onError }) => {
         </Row>
         <Row>
           <Col>
-            <Button onClick={onSubmit} type="submit">Submit</Button>
+            <Button className="main-auth__submit" onClick={onSubmit} type="submit">Submit</Button>
           </Col>
         </Row>
       </form>

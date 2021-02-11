@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ErrorWrapper } from 'components';
+import { ErrorWrapper } from 'nuxxxcomponentlib/dist';
 import { Auth } from 'pages/Auth';
 import { Profile } from 'pages/Profile';
 

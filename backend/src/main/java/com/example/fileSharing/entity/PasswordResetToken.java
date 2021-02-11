@@ -1,9 +1,7 @@
 package com.example.fileSharing.entity;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.hibernate.annotations.Type;
-import org.springframework.web.bind.annotation.DeleteMapping;
 
 import javax.persistence.*;
 import java.util.Calendar;

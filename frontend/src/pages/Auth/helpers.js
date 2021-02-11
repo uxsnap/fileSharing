@@ -1,4 +1,4 @@
-import { AUTH_TYPES } from "../../utils";
+import { AUTH_TYPES } from "utils";
 
 export const getCurrentPageTypeLabel = (curType) => {
   return curType === AUTH_TYPES.LOGIN.type

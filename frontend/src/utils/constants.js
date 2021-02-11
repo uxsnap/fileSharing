@@ -6,16 +6,6 @@ export const AUTH_TYPES = {
 
 export const DEFAULT_TIME_INTERVAL = 3000;
 
-
-/* This object is HttpStatus mapping. 
-	LOADING field is -1 because there is no such status
-*/
-export const RES_STATUS = {
-	OK: 200,
-	ERROR: 400,
-	LOADING: -1,
-};
-
 export const MIN_SEARCH_LENGTH = 2;
 
 export const FRIEND_REQUEST_STATUS = {
