@@ -14,7 +14,7 @@ import javax.validation.Valid;
 import java.util.Collections;
 
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("auth")
 @AllArgsConstructor
 public class AuthController {
   private final AuthService authService;

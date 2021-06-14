@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @AllArgsConstructor
-@RequestMapping("/friend")
+@RequestMapping("friend")
 public class FriendController {
   private final FriendService friendService;
   private final FileService fileService;
