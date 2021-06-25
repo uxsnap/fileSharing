@@ -38,3 +38,5 @@ frontend/node_modules
 
 ### Back ###
 backend/src/avatars/*
+
+.env
