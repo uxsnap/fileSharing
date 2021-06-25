@@ -21,7 +21,7 @@ import java.util.List;
 
 @RestController
 @AllArgsConstructor
-@RequestMapping("/user")
+@RequestMapping("user")
 public class UserController {
   private final UserService userService;
   private final FileService fileService;

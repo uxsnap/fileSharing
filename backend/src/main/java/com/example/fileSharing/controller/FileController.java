@@ -31,7 +31,7 @@ import java.util.*;
 
 
 @RestController
-@RequestMapping("/file")
+@RequestMapping("file")
 @AllArgsConstructor
 public class FileController {
   private final FileService fileService;
