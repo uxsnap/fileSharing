@@ -1,0 +1,13 @@
+### IntelliJ IDEA ###
+.idea
+.idea
+*.iws
+*.iml
+*.ipr
+
+debug.log
+
+### Front ###
+node_modules
+.env
+build

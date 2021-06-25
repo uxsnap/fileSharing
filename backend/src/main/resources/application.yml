@@ -1,0 +1,18 @@
+spring:
+  jpa:
+    database-platform: ${env.DATABASE_DIALECT}
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+  datasource:
+    username: ${env.DATABASE_USERNAME}
+    password: ${env.DATABASE_PASSWORD}
+    url: ${env.DATABASE_URL}
+    driver-class-name: ${env.DATABASE_DRIVER}
+  servlet:
+    multipart:
+      max-file-size: 5MB
+  mvc:
+    view:
+      prefix: /WEB-INF/views/
+      suffix: .jsp

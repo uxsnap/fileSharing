@@ -12,7 +12,7 @@ import javax.persistence.*;
 import java.util.*;
 
 @Entity
-@Table(name = "user")
+@Table(name = "main_user")
 @Data
 @NoArgsConstructor
 public class User implements UserDetails {

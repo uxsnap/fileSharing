@@ -33,8 +33,7 @@ public class FileSharingApplication {
 			@Override
 			public void addCorsMappings(CorsRegistry registry) {
 				registry.addMapping("/**")
-					.allowedOrigins("http://localhost:3000")
-					.allowedMethods("*");
+					.allowedMethods("HEAD", "GET", "PUT", "POST", "DELETE", "PATCH");
 			}
 
 			@Override

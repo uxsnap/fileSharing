@@ -30,11 +30,9 @@ public class AuthService {
   private final PasswordEncoder passwordEncoder;
   private final AuthenticationManager authenticationManager;
 
-  @Value("${spring.custom.reset_pass_template}")
-  private String resetPassTemplate;
-
-  @Value("${spring.custom.support_email}")
-  private String supportEmail;
+//  Functionality will be added sooner or later
+  private String resetPassTemplate = "smth";
+  private String supportEmail = "support";
 
   public JwtResponse loginUser(LoginDto userDto) {
     JwtResponse jwtResponse = new JwtResponse();
